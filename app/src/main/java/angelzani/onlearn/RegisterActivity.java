@@ -8,6 +8,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.TypedValue;
 import android.view.Display;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -63,8 +65,8 @@ public class RegisterActivity extends AppCompatActivity {
         ((EditText)findViewById(R.id.register_ET_phone)).setTextSize(TypedValue.COMPLEX_UNIT_PX, _20px);
         ((EditText)findViewById(R.id.register_ET_date)).setTextSize(TypedValue.COMPLEX_UNIT_PX, _20px);
 
-        findViewById(R.id.register_SV_regBox).setPadding(_20px,_20px,_20px,_20px);
         findViewById(R.id.register_LL_regBox).setPadding(height/20,height/20,height/20,height/20);
+        setMargins(findViewById(R.id.register_LL_regBox), _20px,_20px,_20px,_20px);
 
         GradientDrawable gradientDrawable = new GradientDrawable();
         gradientDrawable.setColor(Color.parseColor("#E5EEFC"));
@@ -73,4 +75,13 @@ public class RegisterActivity extends AppCompatActivity {
         findViewById(R.id.register_LL_regBox).setBackground(gradientDrawable);
 
     }
+
+    private void setMargins (View v, int l, int t, int r, int b) {
+        if (v.getLayoutParams() instanceof ViewGroup.MarginLayoutParams) {
+            ViewGroup.MarginLayoutParams p = (ViewGroup.MarginLayoutParams) v.getLayoutParams();
+            p.setMargins(l, t, r, b);
+            v.requestLayout();
+        }
+    }
+
 } // End Class
