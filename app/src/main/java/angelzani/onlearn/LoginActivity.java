@@ -76,7 +76,6 @@ public class LoginActivity extends AppCompatActivity {
         GradientDrawable gradientDrawable = new GradientDrawable();
         gradientDrawable.setColor(Color.parseColor("#E5EEFC"));
         gradientDrawable.setShape(GradientDrawable.RECTANGLE);
-        //gradientDrawable.setCornerRadius(_20px);
         gradientDrawable.setCornerRadii(new float[] { _20px*2, _20px*2, _20px*4, _20px*4, _20px*2, _20px*2, _20px*4, _20px*4 });
         findViewById(R.id.login_CL_RegisterWrap).setBackground(gradientDrawable);
 
