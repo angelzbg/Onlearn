@@ -76,6 +76,7 @@ public class RegisterActivity extends AppCompatActivity {
 
     }
 
+    //Utility
     private void setMargins (View v, int l, int t, int r, int b) {
         if (v.getLayoutParams() instanceof ViewGroup.MarginLayoutParams) {
             ViewGroup.MarginLayoutParams p = (ViewGroup.MarginLayoutParams) v.getLayoutParams();
