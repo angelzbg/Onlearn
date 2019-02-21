@@ -1,4 +1,4 @@
-package angelzani.onlearn;
+﻿package angelzani.onlearn;
 
 import android.app.DatePickerDialog;
 import android.content.pm.ActivityInfo;
@@ -46,7 +46,7 @@ public class RegisterActivity extends AppCompatActivity {
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT); // Екрана в нормално състояние без да се завърта повече
         setContentView(R.layout.activity_register);
 
-        initialiseUI();
+        initializeUI();
 
         //Firebase
         mAuth = FirebaseAuth.getInstance();
@@ -56,7 +56,7 @@ public class RegisterActivity extends AppCompatActivity {
     } // End OnCreate
 
     private DatePickerDialog.OnDateSetListener mDateSetListener;
-    private void initialiseUI(){
+    private void initializeUI(){
         Display display = getWindowManager().getDefaultDisplay();
         Point size = new Point();
         display.getSize(size);
@@ -94,7 +94,7 @@ public class RegisterActivity extends AppCompatActivity {
 
         //OnClickListeners
         findViewById(R.id.register_IB_back).setOnClickListener(goBack);
-        findViewById(R.id.register_TV_dob).setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.register_TV_dob).setOnClickListener(new View.OnClickListener() { // youtube.com/watch?v=hwe1abDO2Ag <- tutorial + github.com/mitchtabian/DatePickerDialog
             @Override
             public void onClick(View view) {
                 Calendar cal = Calendar.getInstance();
@@ -118,7 +118,7 @@ public class RegisterActivity extends AppCompatActivity {
             }
         };
 
-    } //end initialiseUI()
+    } //end initializeUI()
 
     private void registerNewUser(final String email, final String password) {
         mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
