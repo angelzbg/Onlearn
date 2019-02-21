@@ -13,7 +13,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.TypedValue;
 import android.view.Display;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -72,8 +71,8 @@ public class LoginActivity extends AppCompatActivity {
         int _20px = height/40, _18px = height/44;
         ((EditText) findViewById(R.id.login_ET_Email)).setTextSize(TypedValue.COMPLEX_UNIT_PX, _20px);
         ((EditText) findViewById(R.id.login_ET_Password)).setTextSize(TypedValue.COMPLEX_UNIT_PX, _20px);
-        ((Button) findViewById(R.id.login_B_Login)).setTextSize(TypedValue.COMPLEX_UNIT_PX, _18px);
-        ((Button) findViewById(R.id.login_B_Register)).setTextSize(TypedValue.COMPLEX_UNIT_PX, _18px);
+        ((TextView) findViewById(R.id.login_TV_Login)).setTextSize(TypedValue.COMPLEX_UNIT_PX, _18px);
+        ((TextView) findViewById(R.id.login_TV_Register)).setTextSize(TypedValue.COMPLEX_UNIT_PX, _18px);
         findViewById(R.id.login_CL_RegisterBox).setPadding(_20px*2,_20px*2,_20px*2,_20px*2);
 
         GradientDrawable gradientDrawable = new GradientDrawable();
@@ -86,21 +85,23 @@ public class LoginActivity extends AppCompatActivity {
         gradientDrawable.setColor(Color.parseColor("#80ccfc"));
         gradientDrawable.setShape(GradientDrawable.RECTANGLE);
         gradientDrawable.setCornerRadii(new float[] { 0, 0, _20px, _20px, _20px, _20px, 0, 0 });
-        findViewById(R.id.login_B_Login).setBackground(gradientDrawable);
+        findViewById(R.id.login_TV_Login).setBackground(gradientDrawable);
+        findViewById(R.id.login_TV_Login).setPadding(0,height/53,0,height/53);
 
         gradientDrawable = new GradientDrawable();
         gradientDrawable.setColor(Color.parseColor("#00000000"));
         gradientDrawable.setStroke(height/400, Color.parseColor("#80ccfc"));
         gradientDrawable.setShape(GradientDrawable.RECTANGLE);
         gradientDrawable.setCornerRadii(new float[] { _20px, _20px, 0, 0, 0, 0, _20px, _20px });
-        findViewById(R.id.login_B_Register).setBackground(gradientDrawable);
+        findViewById(R.id.login_TV_Register).setBackground(gradientDrawable);
+        findViewById(R.id.login_TV_Register).setPadding(0,height/53,0,height/53);
 
         ((TextView) findViewById(R.id.login_TV_Logo)).setTextSize(TypedValue.COMPLEX_UNIT_PX, height/10);
 
         ConstraintSet cs = new ConstraintSet();
         cs.clone((ConstraintLayout)findViewById(R.id.login_CL_RegisterBox));
         cs.connect(R.id.login_TI_Password, ConstraintSet.TOP, R.id.login_ET_Email, ConstraintSet.BOTTOM, _20px*2);
-        cs.connect(R.id.login_B_Register, ConstraintSet.TOP, R.id.login_TI_Password, ConstraintSet.BOTTOM, _20px*2);
+        cs.connect(R.id.login_TV_Register, ConstraintSet.TOP, R.id.login_TI_Password, ConstraintSet.BOTTOM, _20px*2);
         cs.applyTo((ConstraintLayout)findViewById(R.id.login_CL_RegisterBox));
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -108,7 +109,7 @@ public class LoginActivity extends AppCompatActivity {
             findViewById(R.id.login_TV_Logo).setElevation(_20px/2);
         }
 
-        findViewById(R.id.login_B_Register).setOnClickListener(goToRegister);
+        findViewById(R.id.login_TV_Register).setOnClickListener(goToRegister);
     }
 
     /*----- OnClickListeners [ START ] -----*/

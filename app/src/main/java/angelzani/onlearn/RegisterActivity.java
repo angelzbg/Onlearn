@@ -1,8 +1,10 @@
 package angelzani.onlearn;
 
+import android.app.DatePickerDialog;
 import android.content.pm.ActivityInfo;
 import android.graphics.Color;
 import android.graphics.Point;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Build;
 import android.support.annotation.NonNull;
@@ -13,6 +15,7 @@ import android.view.Display;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -24,6 +27,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+
+import java.util.Calendar;
 
 public class RegisterActivity extends AppCompatActivity {
 
@@ -50,6 +55,7 @@ public class RegisterActivity extends AppCompatActivity {
 
     } // End OnCreate
 
+    private DatePickerDialog.OnDateSetListener mDateSetListener;
     private void initialiseUI(){
         Display display = getWindowManager().getDefaultDisplay();
         Point size = new Point();
@@ -62,15 +68,16 @@ public class RegisterActivity extends AppCompatActivity {
         findViewById(R.id.register_CL_header).getLayoutParams().height=height/16;
         findViewById(R.id.register_IB_back).getLayoutParams().width=height/20;
         findViewById(R.id.register_IB_back).getLayoutParams().height=height/20;
+        setMargins(findViewById(R.id.register_IB_back), height/80, 0, 0, 0);
         ((TextView)findViewById(R.id.register_TV_head)).setTextSize(TypedValue.COMPLEX_UNIT_PX, height/33);
         ((Button)findViewById(R.id.register_B_signup)).setTextSize(TypedValue.COMPLEX_UNIT_PX, height/44);
 
         ((EditText)findViewById(R.id.register_ET_email)).setTextSize(TypedValue.COMPLEX_UNIT_PX, _20px);
-        ((EditText)findViewById(R.id.register_ET_password)).setTextSize(TypedValue.COMPLEX_UNIT_PX, _20px);
-        ((EditText)findViewById(R.id.register_ET_name)).setTextSize(TypedValue.COMPLEX_UNIT_PX, _20px);
-        ((EditText)findViewById(R.id.register_ET_address)).setTextSize(TypedValue.COMPLEX_UNIT_PX, _20px);
-        ((EditText)findViewById(R.id.register_ET_phone)).setTextSize(TypedValue.COMPLEX_UNIT_PX, _20px);
-        ((EditText)findViewById(R.id.register_ET_date)).setTextSize(TypedValue.COMPLEX_UNIT_PX, _20px);
+        ((EditText)findViewById(R.id.register_ET_password)).setTextSize(TypedValue.COMPLEX_UNIT_PX, _20px); setMargins(findViewById(R.id.register_TI_Password), 0,_20px,0,0);
+        ((EditText)findViewById(R.id.register_ET_name)).setTextSize(TypedValue.COMPLEX_UNIT_PX, _20px); setMargins(findViewById(R.id.register_ET_name), 0,_20px,0,0);
+        ((EditText)findViewById(R.id.register_ET_address)).setTextSize(TypedValue.COMPLEX_UNIT_PX, _20px); setMargins(findViewById(R.id.register_ET_address), 0,_20px,0,0);
+        ((EditText)findViewById(R.id.register_ET_phone)).setTextSize(TypedValue.COMPLEX_UNIT_PX, _20px); setMargins(findViewById(R.id.register_ET_phone), 0,_20px,0,0);
+        ((TextView)findViewById(R.id.register_TV_dob)).setTextSize(TypedValue.COMPLEX_UNIT_PX, _20px); setMargins(findViewById(R.id.register_TV_dob), 0,_20px,0,0);
 
         findViewById(R.id.register_LL_regBox).setPadding(height/20,height/20,height/20,height/20);
 
@@ -87,6 +94,29 @@ public class RegisterActivity extends AppCompatActivity {
 
         //OnClickListeners
         findViewById(R.id.register_IB_back).setOnClickListener(goBack);
+        findViewById(R.id.register_TV_dob).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Calendar cal = Calendar.getInstance();
+                int year = cal.get(Calendar.YEAR);
+                int month = cal.get(Calendar.MONTH);
+                int day = cal.get(Calendar.DAY_OF_MONTH);
+
+                DatePickerDialog dialog = new DatePickerDialog(RegisterActivity.this, android.R.style.Theme_Holo_Light_Dialog_MinWidth, mDateSetListener, year,month,day);
+                dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                dialog.show();
+            }
+        });
+        mDateSetListener = new DatePickerDialog.OnDateSetListener() {
+            @Override
+            public void onDateSet(DatePicker datePicker, int year, int month, int day) {
+                month = month + 1;
+                //Log.d(TAG, "onDateSet: mm/dd/yyy: " + month + "/" + day + "/" + year);
+
+                String date = day + "/" + month + "/" + year;
+                ((TextView)findViewById(R.id.register_TV_dob)).setText(date);
+            }
+        };
 
     } //end initialiseUI()
 

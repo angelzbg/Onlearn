@@ -77,29 +77,33 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <Button
-                android:id="@+id/login_B_Login"
-                style="@style/Widget.AppCompat.Button"
+            <TextView
+                android:id="@+id/login_TV_Login"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:background="@color/transparent"
                 android:fontFamily="@font/roboto_regular"
-                android:text="Login"
+                android:gravity="center"
+                android:paddingTop="15px"
+                android:paddingBottom="15px"
+                android:text="LOGIN"
                 android:textColor="@color/white"
                 android:textSize="18px"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/login_Space_WrapMiddle"
-                app:layout_constraintTop_toTopOf="@+id/login_B_Register" />
+                app:layout_constraintTop_toTopOf="@+id/login_TV_Register" />
 
-            <Button
-                android:id="@+id/login_B_Register"
-                style="@style/Widget.AppCompat.Button"
+            <TextView
+                android:id="@+id/login_TV_Register"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20px"
                 android:background="@color/transparent"
                 android:fontFamily="@font/roboto_regular"
-                android:text="Register"
+                android:gravity="center"
+                android:paddingTop="15px"
+                android:paddingBottom="15px"
+                android:text="REGISTER"
                 android:textColor="#80ccfc"
                 android:textSize="18px"
                 app:layout_constraintEnd_toStartOf="@+id/login_Space_WrapMiddle"
