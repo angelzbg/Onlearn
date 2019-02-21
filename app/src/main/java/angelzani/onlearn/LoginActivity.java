@@ -110,8 +110,8 @@ public class LoginActivity extends AppCompatActivity {
 
         findViewById(R.id.login_B_Register).setOnClickListener(goToRegister);
     }
-    
-    /*----- OnClickListeners -----*/
+
+    /*----- OnClickListeners [ START ] -----*/
 
     //Go To Register Activity
     View.OnClickListener goToRegister = new View.OnClickListener() {
@@ -122,7 +122,7 @@ public class LoginActivity extends AppCompatActivity {
         }
     };
 
-    /*----- OnClickListeners -----*/
+    /*----- OnClickListeners [  END  ] -----*/
 
     private void registerNewUser(final String email, final String password) {
         mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
