@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "380911645094",
+    "firebase_url": "https://android2leet.firebaseio.com",
+    "project_id": "android2leet",
+    "storage_bucket": "android2leet.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:380911645094:android:5c951f8da21fddb9",
+        "android_client_info": {
+          "package_name": "angelzani.onlearn"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "380911645094-4vqg9fbco3r11ql6ru272elamregscjn.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "angelzani.onlearn",
+            "certificate_hash": "47d580cfc5c8b8642914868b514b050c0ad2a510"
+          }
+        },
+        {
+          "client_id": "380911645094-1dd02daogn15devgvptb3tjq9ro4g3mt.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDG_otjd1QtMzi_VqDG9Wtb25ZySznJ2jU"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "380911645094-1dd02daogn15devgvptb3tjq9ro4g3mt.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
