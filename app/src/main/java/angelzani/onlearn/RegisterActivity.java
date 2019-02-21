@@ -4,6 +4,8 @@ import android.content.pm.ActivityInfo;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.drawable.GradientDrawable;
+import android.os.Build;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.TypedValue;
@@ -13,8 +15,13 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -66,7 +73,6 @@ public class RegisterActivity extends AppCompatActivity {
         ((EditText)findViewById(R.id.register_ET_date)).setTextSize(TypedValue.COMPLEX_UNIT_PX, _20px);
 
         findViewById(R.id.register_LL_regBox).setPadding(height/20,height/20,height/20,height/20);
-        setMargins(findViewById(R.id.register_LL_regBox), _20px,_20px,_20px,_20px);
 
         GradientDrawable gradientDrawable = new GradientDrawable();
         gradientDrawable.setColor(Color.parseColor("#E5EEFC"));
@@ -74,7 +80,45 @@ public class RegisterActivity extends AppCompatActivity {
         gradientDrawable.setCornerRadii(new float[] { _20px*2, _20px*2, _20px*4, _20px*4, _20px*2, _20px*2, _20px*4, _20px*4 });
         findViewById(R.id.register_LL_regBox).setBackground(gradientDrawable);
 
-    }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            findViewById(R.id.register_CL_header).setElevation(_20px/4);
+            findViewById(R.id.register_LL_regBox).setElevation(_20px/2);
+        }
+
+        //OnClickListeners
+        findViewById(R.id.register_IB_back).setOnClickListener(goBack);
+
+    } //end initialiseUI()
+
+    private void registerNewUser(final String email, final String password) {
+        mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+            @Override
+            public void onComplete(@NonNull Task<AuthResult> task) {
+                if (task.isSuccessful()) {
+                    // Sign in success, update UI with the signed-in user's information
+                    //Log.d(TAG, "createUserWithEmail:success");
+                    FirebaseUser user = mAuth.getCurrentUser();
+                    //updateUI(user);
+                } else {
+                    // If sign in fails, display a message to the user.
+                    //Log.w(TAG, "createUserWithEmail:failure", task.getException());
+                    Toast.makeText(RegisterActivity.this, "Authentication failed.", Toast.LENGTH_SHORT).show();
+                    //updateUI(null);
+                }
+            }
+        });
+    }//end registerNewUser()
+
+    /*----- On Click Listeners [ START ] -----*/
+
+    View.OnClickListener goBack = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            finish();
+        }
+    };
+
+    /*----- On Click Listeners [  END  ] -----*/
 
     //Utility
     private void setMargins (View v, int l, int t, int r, int b) {
