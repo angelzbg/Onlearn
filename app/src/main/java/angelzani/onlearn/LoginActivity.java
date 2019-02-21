@@ -1,5 +1,6 @@
 package angelzani.onlearn;
 
+import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.Color;
 import android.graphics.Point;
@@ -12,6 +13,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.TypedValue;
 import android.view.Display;
+import android.view.MotionEvent;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -41,7 +44,7 @@ public class LoginActivity extends AppCompatActivity {
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT); // Екрана в нормално състояние без да се завърта повече
         setContentView(R.layout.activity_login);
 
-        resize();
+        initializeUI();
 
         //Firebase
         mAuth = FirebaseAuth.getInstance();
@@ -59,7 +62,7 @@ public class LoginActivity extends AppCompatActivity {
         }
     }//end onStart()
 
-    private void resize(){
+    private void initializeUI(){
         Display display = getWindowManager().getDefaultDisplay();
         Point size = new Point();
         display.getSize(size);
@@ -104,7 +107,22 @@ public class LoginActivity extends AppCompatActivity {
             findViewById(R.id.login_CL_RegisterWrap).setElevation(_20px/2);
             findViewById(R.id.login_TV_Logo).setElevation(_20px/2);
         }
+
+        findViewById(R.id.login_B_Register).setOnClickListener(goToRegister);
     }
+    
+    /*----- OnClickListeners -----*/
+
+    //Go To Register Activity
+    View.OnClickListener goToRegister = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            Intent intent =  new Intent(LoginActivity.this, RegisterActivity.class);
+            startActivity(intent);
+        }
+    };
+
+    /*----- OnClickListeners -----*/
 
     private void registerNewUser(final String email, final String password) {
         mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
