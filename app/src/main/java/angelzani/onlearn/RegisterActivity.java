@@ -1,11 +1,15 @@
 package angelzani.onlearn;
 
 import android.app.DatePickerDialog;
+import android.content.Context;
+import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.GradientDrawable;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -25,10 +29,14 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.Calendar;
+import java.util.HashMap;
 
 public class RegisterActivity extends AppCompatActivity {
 
@@ -94,6 +102,7 @@ public class RegisterActivity extends AppCompatActivity {
 
         //OnClickListeners
         findViewById(R.id.register_IB_back).setOnClickListener(goBack);
+        findViewById(R.id.register_B_signup).setOnClickListener(registerListener);
         findViewById(R.id.register_TV_dob).setOnClickListener(new View.OnClickListener() { // youtube.com/watch?v=hwe1abDO2Ag <- tutorial + github.com/mitchtabian/DatePickerDialog
             @Override
             public void onClick(View view) {
@@ -113,26 +122,86 @@ public class RegisterActivity extends AppCompatActivity {
                 month = month + 1;
                 //Log.d(TAG, "onDateSet: mm/dd/yyy: " + month + "/" + day + "/" + year);
 
-                String date = day + "/" + month + "/" + year;
+                String date = year + "-" + month + "-" + day;
                 ((TextView)findViewById(R.id.register_TV_dob)).setText(date);
             }
         };
 
     } //end initializeUI()
 
-    private void registerNewUser(final String email, final String password) {
+    private void registerNewUser(final String email, final String password, final String name, final String address, final String phone, final String dob) {
         mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if (task.isSuccessful()) {
                     // Sign in success, update UI with the signed-in user's information
                     //Log.d(TAG, "createUserWithEmail:success");
-                    FirebaseUser user = mAuth.getCurrentUser();
+                    final FirebaseUser user = mAuth.getCurrentUser();
                     //updateUI(user);
+
+                    final DatabaseReference dbRefUser = mRef.child("users").child(user.getUid());
+
+                    dbRefUser.child("name").setValue(name, new OnCompleteListener() {
+                        @Override
+                        public void onComplete(@NonNull Task task) {
+                            dbRefUser.child("adr").setValue(address, new OnCompleteListener() {
+                                @Override
+                                public void onComplete(@NonNull Task task) {
+                                    dbRefUser.child("phone").setValue(phone, new OnCompleteListener() {
+                                        @Override
+                                        public void onComplete(@NonNull Task task) {
+                                            dbRefUser.child("dob").setValue(dob, new OnCompleteListener() {
+                                                @Override
+                                                public void onComplete(@NonNull Task task) {
+                                                    startActivity(new Intent(RegisterActivity.this, ClientActivity.class));
+                                                    finish();
+                                                }
+                                            });
+                                        }
+                                    });
+                                }
+                            });
+                        }
+                    });
+
+                    /*final HashMap<String, String>userObj=new HashMap<String, String>();
+                    userObj.put("name",name);
+                    userObj.put("adr",address);
+                    userObj.put("dob",dob);
+                    userObj.put("phone",phone);
+
+                    mRef.child("users").child(user.getUid()).child("role").addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            if(dataSnapshot.exists())
+                            {
+                                mRef.child("users").child(user.getUid()).setValue(userObj, new OnCompleteListener() {
+                                    @Override
+                                    public void onComplete(@NonNull Task task) {
+                                        if(task.isSuccessful())
+                                        {
+                                            startActivity(new Intent(RegisterActivity.this, ClientActivity.class));
+                                            finish();
+                                        } else
+                                        {
+                                            Toast.makeText(RegisterActivity.this, task.getException().getMessage(), Toast.LENGTH_LONG).show();
+                                        }
+                                    }
+                                });
+                            }
+                        }
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+                            Toast.makeText(RegisterActivity.this, databaseError.getMessage(), Toast.LENGTH_LONG).show();
+                        }
+                    });*/
+
+
+
                 } else {
                     // If sign in fails, display a message to the user.
                     //Log.w(TAG, "createUserWithEmail:failure", task.getException());
-                    Toast.makeText(RegisterActivity.this, "Authentication failed.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(RegisterActivity.this, task.getException().getMessage(), Toast.LENGTH_LONG).show();
                     //updateUI(null);
                 }
             }
@@ -140,6 +209,46 @@ public class RegisterActivity extends AppCompatActivity {
     }//end registerNewUser()
 
     /*----- On Click Listeners [ START ] -----*/
+
+    View.OnClickListener registerListener=new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+
+            String email = ((EditText)findViewById(R.id.register_ET_email)).getText().toString().trim();
+            if(!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()){
+                Toast.makeText(getApplicationContext(), "Please enter valid email address.", Toast.LENGTH_LONG).show();
+                return;
+            }
+
+            String password = ((EditText)findViewById(R.id.register_ET_password)).getText().toString().trim();
+            if(password.length() < 6) {
+                Toast.makeText(getApplicationContext(), "Password must contain at least 6 characters.", Toast.LENGTH_LONG).show();
+                return;
+            }
+
+            String name=((EditText)findViewById(R.id.register_ET_name)).getText().toString().trim();
+            if(name.length()<2){
+                Toast.makeText(getApplicationContext(), "Name must contain at least 2 characters.", Toast.LENGTH_LONG).show();
+                return;
+            }
+
+            String dob = null, address=null, phone = null;
+            if(!((EditText)findViewById(R.id.register_ET_address)).getText().toString().trim().isEmpty()) address=((EditText)findViewById(R.id.register_ET_address)).getText().toString().trim();
+
+            if(!((EditText)findViewById(R.id.register_ET_phone)).getText().toString().trim().isEmpty()) phone=((EditText)findViewById(R.id.register_ET_phone)).getText().toString().trim();
+
+            if(!((TextView)findViewById(R.id.register_TV_dob)).getText().toString().trim().isEmpty()) dob=((TextView)findViewById(R.id.register_TV_dob)).getText().toString();
+
+            if(!isInternetAvailable()) {
+                Toast.makeText(getApplicationContext(), "No Internet Connection.", Toast.LENGTH_LONG).show();
+                return;
+            }
+
+            registerNewUser(email,password,name,address,phone, dob);
+
+        }
+    };
+
 
     View.OnClickListener goBack = new View.OnClickListener() {
         @Override
@@ -158,5 +267,13 @@ public class RegisterActivity extends AppCompatActivity {
             v.requestLayout();
         }
     }
+
+    private boolean isInternetAvailable() {
+        ConnectivityManager cm = (ConnectivityManager)this.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        boolean isConnected = activeNetwork != null && activeNetwork.isConnectedOrConnecting();
+        return isConnected;
+    }
+
 
 } // End Class
