@@ -12,6 +12,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.TypedValue;
@@ -57,7 +58,6 @@ public class RegisterActivity extends AppCompatActivity {
         initializeUI();
 
         //Firebase
-        FirebaseDatabase.getInstance().setPersistenceEnabled(true);
         mAuth = FirebaseAuth.getInstance();
         mDatabase = FirebaseDatabase.getInstance();
         mRef = mDatabase.getReference();
@@ -138,67 +138,6 @@ public class RegisterActivity extends AppCompatActivity {
 
                     finalizeRegistration(email, password, name, address, phone, dob);
 
-                    /*final FirebaseUser user = mAuth.getCurrentUser();
-
-                    final DatabaseReference dbRefUser = mRef.child("users").child(user.getUid());
-
-                    dbRefUser.child("name").setValue(name, new OnCompleteListener() {
-                        @Override
-                        public void onComplete(@NonNull Task task) {
-                            dbRefUser.child("adr").setValue(address, new OnCompleteListener() {
-                                @Override
-                                public void onComplete(@NonNull Task task) {
-                                    dbRefUser.child("phone").setValue(phone, new OnCompleteListener() {
-                                        @Override
-                                        public void onComplete(@NonNull Task task) {
-                                            dbRefUser.child("dob").setValue(dob, new OnCompleteListener() {
-                                                @Override
-                                                public void onComplete(@NonNull Task task) {
-                                                    startActivity(new Intent(RegisterActivity.this, ClientActivity.class));
-                                                    finish();
-                                                }
-                                            });
-                                        }
-                                    });
-                                }
-                            });
-                        }
-                    });*/
-
-                    /*final HashMap<String, String>userObj=new HashMap<String, String>();
-                    userObj.put("name",name);
-                    userObj.put("adr",address);
-                    userObj.put("dob",dob);
-                    userObj.put("phone",phone);
-
-                    mRef.child("users").child(user.getUid()).child("role").addValueEventListener(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                            if(dataSnapshot.exists())
-                            {
-                                mRef.child("users").child(user.getUid()).setValue(userObj, new OnCompleteListener() {
-                                    @Override
-                                    public void onComplete(@NonNull Task task) {
-                                        if(task.isSuccessful())
-                                        {
-                                            startActivity(new Intent(RegisterActivity.this, ClientActivity.class));
-                                            finish();
-                                        } else
-                                        {
-                                            Toast.makeText(RegisterActivity.this, task.getException().getMessage(), Toast.LENGTH_LONG).show();
-                                        }
-                                    }
-                                });
-                            }
-                        }
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError databaseError) {
-                            Toast.makeText(RegisterActivity.this, databaseError.getMessage(), Toast.LENGTH_LONG).show();
-                        }
-                    });*/
-
-
-
                 } else {
                     // If sign in fails, display a message to the user.
                     //Log.w(TAG, "createUserWithEmail:failure", task.getException());
@@ -216,38 +155,68 @@ public class RegisterActivity extends AppCompatActivity {
                 if (task.isSuccessful()) {
 
                     final FirebaseUser user = mAuth.getCurrentUser();
+                    final DatabaseReference dbRefUser = mRef.child("users").child(user.getUid());
+                    dbRefUser.child("name").setValue(name);
+                    dbRefUser.child("adr").setValue(address);
+                    dbRefUser.child("dob").setValue(dob);
+                    dbRefUser.child("phone").setValue(phone);
 
-                    final HashMap<String, String>userObj=new HashMap<String, String>();
-                    userObj.put("name",name);
-                    userObj.put("adr",address);
-                    userObj.put("dob",dob);
-                    userObj.put("phone",phone);
+                    startActivity(new Intent(RegisterActivity.this, ClientActivity.class));
+                    finish();
 
-                    mRef.child("users").child(user.getUid()).child("role").addValueEventListener(new ValueEventListener() {
+                    /*mRef.child("users").child(user.getUid()).child("role").addValueEventListener(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                             if(dataSnapshot.exists())
                             {
-                                mRef.child("users").child(user.getUid()).setValue(userObj, new OnCompleteListener() {
+                                final DatabaseReference dbRefUser = mRef.child("users").child(user.getUid());
+
+                                dbRefUser.child("name").setValue(name, new DatabaseReference.CompletionListener() {
                                     @Override
-                                    public void onComplete(@NonNull Task task) {
-                                        if(task.isSuccessful())
-                                        {
-                                            startActivity(new Intent(RegisterActivity.this, ClientActivity.class));
-                                            finish();
-                                        } else
-                                        {
-                                            Toast.makeText(RegisterActivity.this, task.getException().getMessage(), Toast.LENGTH_LONG).show();
+                                    public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
+                                        if(databaseError != null){
+                                            Toast.makeText(RegisterActivity.this, "name: " + databaseError.getMessage(), Toast.LENGTH_LONG).show();
+                                        } else {
+                                            dbRefUser.child("adr").setValue(address, new DatabaseReference.CompletionListener() {
+                                                @Override
+                                                public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
+                                                    if(databaseError != null){
+                                                        Toast.makeText(RegisterActivity.this, "adr: " + databaseError.getMessage(), Toast.LENGTH_LONG).show();
+                                                    } else {
+                                                        dbRefUser.child("phone").setValue(phone, new DatabaseReference.CompletionListener() {
+                                                            @Override
+                                                            public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
+                                                                if(databaseError != null){
+                                                                    Toast.makeText(RegisterActivity.this, "phone: " + databaseError.getMessage(), Toast.LENGTH_LONG).show();
+                                                                } else {
+                                                                    dbRefUser.child("dob").setValue(dob, new DatabaseReference.CompletionListener() {
+                                                                        @Override
+                                                                        public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
+                                                                            if(databaseError != null){
+                                                                                Toast.makeText(RegisterActivity.this, "dob: " + databaseError.getMessage(), Toast.LENGTH_LONG).show();
+                                                                            } else {
+                                                                                startActivity(new Intent(RegisterActivity.this, ClientActivity.class));
+                                                                                finish();
+                                                                            }
+                                                                        }
+                                                                    });
+                                                                }
+                                                            }
+                                                        });
+                                                    }
+                                                }
+                                            });
                                         }
                                     }
                                 });
+
                             }
                         }
                         @Override
                         public void onCancelled(@NonNull DatabaseError databaseError) {
                             Toast.makeText(RegisterActivity.this, databaseError.getMessage(), Toast.LENGTH_LONG).show();
                         }
-                    });
+                    });*/
                 }
             }
         });
