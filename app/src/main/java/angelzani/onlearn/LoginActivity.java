@@ -64,6 +64,20 @@ public class LoginActivity extends AppCompatActivity {
         FirebaseUser user = mAuth.getCurrentUser();
         if(user!=null){ // логнати сме
             //теглим атрибут role и роверяваме дали е client или admin -> ClientActivity || AdminActivity
+            mRef.child("users").child(user.getUid()).child("role").addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    if(dataSnapshot.getValue(String.class).equals("admin")) startActivity(new Intent(LoginActivity.this, AdminActivity.class));
+                    else startActivity(new Intent(LoginActivity.this, ClientActivity.class));
+                }
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+                    if(!isInternetAvailable()) {
+                        Toast.makeText(getApplicationContext(), "No Internet Connection.", Toast.LENGTH_LONG).show();
+                        return;
+                    }
+                }
+            });
         }
     }//end onStart()
 
@@ -183,6 +197,7 @@ public class LoginActivity extends AppCompatActivity {
                             }
                         }
                     });
+
                 } else {
                     // If sign in fails, display a message to the user.
                     //Log.w(TAG, "signInWithEmail:failure", task.getException());
