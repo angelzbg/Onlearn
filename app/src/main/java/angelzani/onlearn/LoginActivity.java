@@ -52,6 +52,7 @@ public class LoginActivity extends AppCompatActivity {
         initializeUI();
 
         //Firebase
+        FirebaseDatabase.getInstance().setPersistenceEnabled(true);
         mAuth = FirebaseAuth.getInstance();
         mDatabase = FirebaseDatabase.getInstance();
         mRef = mDatabase.getReference(); //root
