@@ -187,7 +187,10 @@ public class LoginActivity extends AppCompatActivity {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                             if(dataSnapshot.getValue(String.class).equals("admin")) startActivity(new Intent(LoginActivity.this, AdminActivity.class));
-                            else startActivity(new Intent(LoginActivity.this, ClientActivity.class));
+                            else {
+                                startActivity(new Intent(LoginActivity.this, ClientActivity.class));
+                                finish();
+                            }
                         }
                         @Override
                         public void onCancelled(@NonNull DatabaseError databaseError) {
