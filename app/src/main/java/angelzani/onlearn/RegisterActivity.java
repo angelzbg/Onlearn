@@ -57,6 +57,7 @@ public class RegisterActivity extends AppCompatActivity {
         initializeUI();
 
         //Firebase
+        FirebaseDatabase.getInstance().setPersistenceEnabled(true);
         mAuth = FirebaseAuth.getInstance();
         mDatabase = FirebaseDatabase.getInstance();
         mRef = mDatabase.getReference();
@@ -134,10 +135,10 @@ public class RegisterActivity extends AppCompatActivity {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if (task.isSuccessful()) {
-                    // Sign in success, update UI with the signed-in user's information
-                    //Log.d(TAG, "createUserWithEmail:success");
-                    final FirebaseUser user = mAuth.getCurrentUser();
-                    //updateUI(user);
+
+                    finalizeRegistration(email, password, name, address, phone, dob);
+
+                    /*final FirebaseUser user = mAuth.getCurrentUser();
 
                     final DatabaseReference dbRefUser = mRef.child("users").child(user.getUid());
 
@@ -162,7 +163,7 @@ public class RegisterActivity extends AppCompatActivity {
                                 }
                             });
                         }
-                    });
+                    });*/
 
                     /*final HashMap<String, String>userObj=new HashMap<String, String>();
                     userObj.put("name",name);
@@ -207,6 +208,50 @@ public class RegisterActivity extends AppCompatActivity {
             }
         });
     }//end registerNewUser()
+
+    private void finalizeRegistration(final String email, final String password, final String name, final String address, final String phone, final String dob){
+        mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+            @Override
+            public void onComplete(@NonNull Task<AuthResult> task) {
+                if (task.isSuccessful()) {
+
+                    final FirebaseUser user = mAuth.getCurrentUser();
+
+                    final HashMap<String, String>userObj=new HashMap<String, String>();
+                    userObj.put("name",name);
+                    userObj.put("adr",address);
+                    userObj.put("dob",dob);
+                    userObj.put("phone",phone);
+
+                    mRef.child("users").child(user.getUid()).child("role").addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            if(dataSnapshot.exists())
+                            {
+                                mRef.child("users").child(user.getUid()).setValue(userObj, new OnCompleteListener() {
+                                    @Override
+                                    public void onComplete(@NonNull Task task) {
+                                        if(task.isSuccessful())
+                                        {
+                                            startActivity(new Intent(RegisterActivity.this, ClientActivity.class));
+                                            finish();
+                                        } else
+                                        {
+                                            Toast.makeText(RegisterActivity.this, task.getException().getMessage(), Toast.LENGTH_LONG).show();
+                                        }
+                                    }
+                                });
+                            }
+                        }
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+                            Toast.makeText(RegisterActivity.this, databaseError.getMessage(), Toast.LENGTH_LONG).show();
+                        }
+                    });
+                }
+            }
+        });
+    }
 
     /*----- On Click Listeners [ START ] -----*/
 
