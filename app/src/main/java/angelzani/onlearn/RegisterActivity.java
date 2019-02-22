@@ -1,4 +1,4 @@
-﻿package angelzani.onlearn;
+package angelzani.onlearn;
 
 import android.app.DatePickerDialog;
 import android.content.pm.ActivityInfo;

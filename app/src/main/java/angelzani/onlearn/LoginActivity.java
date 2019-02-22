@@ -1,10 +1,13 @@
 package angelzani.onlearn;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.drawable.GradientDrawable;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
@@ -24,8 +27,11 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -48,7 +54,7 @@ public class LoginActivity extends AppCompatActivity {
         //Firebase
         mAuth = FirebaseAuth.getInstance();
         mDatabase = FirebaseDatabase.getInstance();
-        mRef = mDatabase.getReference();
+        mRef = mDatabase.getReference(); //root
 
     }//end onCreate()
 
@@ -109,7 +115,9 @@ public class LoginActivity extends AppCompatActivity {
             findViewById(R.id.login_TV_Logo).setElevation(_20px/2);
         }
 
+        //On Click Listeners
         findViewById(R.id.login_TV_Register).setOnClickListener(goToRegister);
+        findViewById(R.id.login_TV_Login).setOnClickListener(loginListener);
     }
 
     /*----- OnClickListeners [ START ] -----*/
@@ -120,6 +128,32 @@ public class LoginActivity extends AppCompatActivity {
         public void onClick(View v) {
             Intent intent =  new Intent(LoginActivity.this, RegisterActivity.class);
             startActivity(intent);
+        }
+    };
+
+    //Login
+    View.OnClickListener loginListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+
+            final String email = ((EditText)findViewById(R.id.login_ET_Email)).getText().toString().trim();
+            if(!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()){
+                Toast.makeText(getApplicationContext(), "Please enter valid email address.", Toast.LENGTH_LONG).show();
+                return;
+            }
+
+            final String password = ((EditText)findViewById(R.id.login_ET_Password)).getText().toString().trim();
+            if(password.length() < 6) {
+                Toast.makeText(getApplicationContext(), "Password must contain at least 6 characters.", Toast.LENGTH_LONG).show();
+                return;
+            }
+
+            if(!isInternetAvailable()) {
+                Toast.makeText(getApplicationContext(), "No Internet Connection.", Toast.LENGTH_LONG).show();
+                return;
+            }
+
+            login(email, password);
         }
     };
 
@@ -134,14 +168,37 @@ public class LoginActivity extends AppCompatActivity {
                     //Log.d(TAG, "signInWithEmail:success");
                     FirebaseUser user = mAuth.getCurrentUser();
                     //updateUI(user);
+
+                    mRef.child("users").child(user.getUid()).child("role").addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            if(dataSnapshot.getValue(String.class).equals("admin")) startActivity(new Intent(LoginActivity.this, AdminActivity.class));
+                            else startActivity(new Intent(LoginActivity.this, ClientActivity.class));
+                        }
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+                            if(!isInternetAvailable()) {
+                                Toast.makeText(getApplicationContext(), "No Internet Connection.", Toast.LENGTH_LONG).show();
+                                return;
+                            }
+                        }
+                    });
                 } else {
                     // If sign in fails, display a message to the user.
                     //Log.w(TAG, "signInWithEmail:failure", task.getException());
-                    Toast.makeText(LoginActivity.this, "Authentication failed.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(LoginActivity.this, task.getException().getMessage(), Toast.LENGTH_LONG).show();
                     //updateUI(null);
                 }
             }
         });
     }//end login()
+
+    //Utility
+    private boolean isInternetAvailable() {
+        ConnectivityManager cm = (ConnectivityManager)this.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        boolean isConnected = activeNetwork != null && activeNetwork.isConnectedOrConnecting();
+        return isConnected;
+    }
 
 }//end LoginActivity{}
