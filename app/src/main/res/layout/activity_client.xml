@@ -32,6 +32,7 @@
                 android:layout_gravity="center"
                 android:layout_marginStart="10px"
                 android:layout_marginEnd="10px"
+                android:tint="@color/light_blue1"
                 app:srcCompat="@drawable/profile_icon"
                 tools:layout_editor_absoluteY="5dp" />
 
@@ -49,4 +50,53 @@
         </LinearLayout>
 
     </android.support.constraint.ConstraintLayout>
+
+    <LinearLayout
+        android:id="@+id/client_LL_HeadMenu"
+        android:layout_width="0dp"
+        android:layout_height="55px"
+        android:background="@color/light_blue2"
+        android:orientation="horizontal"
+        android:weightSum="3"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/client_CL_Head">
+
+        <TextView
+            android:id="@+id/client_TV_HM_All"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:fontFamily="@font/roboto_medium"
+            android:gravity="center"
+            android:text="ALL"
+            android:textColor="@color/white"
+            android:textSize="20px" />
+
+        <TextView
+            android:id="@+id/client_TV_HM_Ongoing"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:background="@drawable/background_tab_menu_selected"
+            android:fontFamily="@font/roboto_medium"
+            android:gravity="center"
+            android:text="ONGOING"
+            android:textColor="@color/white"
+            android:textSize="20px" />
+
+        <TextView
+            android:id="@+id/client_TV_HM_Ended"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:fontFamily="@font/roboto_medium"
+            android:gravity="center"
+            android:text="ENDED"
+            android:textColor="@color/white"
+            android:textSize="20px" />
+    </LinearLayout>
 </android.support.constraint.ConstraintLayout>

@@ -1,19 +1,28 @@
 package angelzani.onlearn;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.Point;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.TypedValue;
 import android.view.Display;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 public class ClientActivity extends AppCompatActivity {
 
@@ -22,6 +31,7 @@ public class ClientActivity extends AppCompatActivity {
 
     //Firebase
     private FirebaseAuth mAuth;
+    private FirebaseUser user;
     private FirebaseDatabase mDatabase;
     private DatabaseReference mRef, dbRefUsers, dbRefCourse, dbRefGroups, dbRefParticipation;
 
@@ -34,6 +44,7 @@ public class ClientActivity extends AppCompatActivity {
 
         //Firebase
         mAuth = FirebaseAuth.getInstance();
+        user = mAuth.getCurrentUser();
         mDatabase = FirebaseDatabase.getInstance();
         mRef = mDatabase.getReference(); //root
         dbRefUsers = mRef.child("users");
@@ -50,12 +61,42 @@ public class ClientActivity extends AppCompatActivity {
         width = size.x;
         height = size.y;
 
+        int _20px = height/40;
+
         /* ----- Header Layout ----- */
         findViewById(R.id.client_CL_Head).getLayoutParams().height = height/16;
         //Profile Icon
         findViewById(R.id.client_IV_Profile).getLayoutParams().width = height/18;
         findViewById(R.id.client_IV_Profile).getLayoutParams().height = findViewById(R.id.client_IV_Profile).getLayoutParams().width;
         setMargins(findViewById(R.id.client_IV_Profile), height/80,0,height/80,0);
+        findViewById(R.id.client_LL_ToProfile).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(ClientActivity.this, ProfileActivity.class));
+            }
+        });
+        //Name text view
+        ((TextView)findViewById(R.id.client_TV_Name)).setTextSize(TypedValue.COMPLEX_UNIT_PX, _20px);
+        dbRefUsers.child(user.getUid()).child("name").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if(dataSnapshot.exists()){
+                    ((TextView)findViewById(R.id.client_TV_Name)).setText(dataSnapshot.getValue(String.class));
+                }
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                if(!isInternetAvailable()){
+                    Toast.makeText(getApplicationContext(), "No internet connection.", Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+
+        /* ----- Head Menu Tabs ----- */
+        findViewById(R.id.client_LL_HeadMenu).getLayoutParams().height = (int)(height/14.5);
+        ((TextView)findViewById(R.id.client_TV_HM_All)).setTextSize(TypedValue.COMPLEX_UNIT_PX, _20px);
+        ((TextView)findViewById(R.id.client_TV_HM_Ongoing)).setTextSize(TypedValue.COMPLEX_UNIT_PX, _20px);
+        ((TextView)findViewById(R.id.client_TV_HM_Ended)).setTextSize(TypedValue.COMPLEX_UNIT_PX, _20px);
 
     }
 
