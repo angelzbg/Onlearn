@@ -63,18 +63,11 @@ public class LoginActivity extends AppCompatActivity {
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT); // Екрана в нормално състояние без да се завърта повече
         setContentView(R.layout.activity_login);
 
-        initializeUI();
-
         //Firebase
         mAuth = FirebaseAuth.getInstance();
         mDatabase = FirebaseDatabase.getInstance();
         mRef = mDatabase.getReference(); //root
 
-    }//end onCreate()
-
-    @Override
-    public void onStart() { // този метод следва веднага след onCreate()
-        super.onStart();
         FirebaseUser user = mAuth.getCurrentUser();
         if(user!=null){ // логнати сме
             //теглим атрибут role и роверяваме дали е client или admin -> ClientActivity || AdminActivity
@@ -93,7 +86,10 @@ public class LoginActivity extends AppCompatActivity {
                 }
             });
         }
-    }//end onStart()
+
+        initializeUI();
+
+    }//end onCreate()
 
     private void initializeUI(){
         Display display = getWindowManager().getDefaultDisplay();
