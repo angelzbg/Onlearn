@@ -2,17 +2,51 @@
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/admin_CL_main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".AdminActivity">
 
-    <TextView
-        android:id="@+id/textView2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:text="admin activity"
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/admin_CL_header"
+        android:layout_width="0dp"
+        android:layout_height="50px"
+        android:background="@color/light_blue2"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent">
+
+        <LinearLayout
+            android:id="@+id/admin_LL_toProfile"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:orientation="horizontal"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageView
+                android:id="@+id/admin_IV_profile"
+                android:layout_width="45px"
+                android:layout_height="45px"
+                android:layout_gravity="center"
+                android:layout_marginStart="10px"
+                android:layout_marginEnd="10px"
+                app:srcCompat="@drawable/profile_icon"
+                tools:layout_editor_absoluteY="5dp" />
+
+            <TextView
+                android:id="@+id/admin_TV_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:fontFamily="@font/roboto_regular"
+                android:text="Name"
+                android:textColor="@color/light_blue1"
+                android:textSize="20px"
+                tools:layout_editor_absoluteX="45dp"
+                tools:layout_editor_absoluteY="24dp" />
+        </LinearLayout>
+
+    </android.support.constraint.ConstraintLayout>
 </android.support.constraint.ConstraintLayout>
