@@ -83,7 +83,7 @@ public class AdminActivity extends AppCompatActivity {
         });
 
         //Name TextView
-        ((TextView)findViewById(R.id.admin_TV_name)).setTextSize(TypedValue.COMPLEX_UNIT_PX, _20px);
+        ((TextView)findViewById(R.id.admin_TV_name)).setTextSize(TypedValue.COMPLEX_UNIT_PX, height/33);
         dbRefUsers.child(user.getUid()).child("name").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
