@@ -130,6 +130,7 @@
         android:id="@+id/login_CL_Loading"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:background="#5E535353"
         android:clickable="true"
         android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -153,6 +154,8 @@
         android:id="@+id/login_CL_Alert"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:clickable="true"
+        android:padding="10px"
         android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -194,7 +197,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/login_TV_AlertTitle"></LinearLayout>
 
             <TextView
-                android:id="@+id/textView4"
+                android:id="@+id/login_TV_AlertMessage"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/roboto_regular"
@@ -203,13 +206,13 @@
                 android:text="Alert Message"
                 android:textColor="@color/black"
                 android:textSize="20px"
-                app:layout_constraintBottom_toTopOf="@+id/textView5"
+                app:layout_constraintBottom_toTopOf="@+id/login_TV_AlertClose"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/login_LL_AlertSeparator1" />
 
             <TextView
-                android:id="@+id/textView5"
+                android:id="@+id/login_TV_AlertClose"
                 android:layout_width="50px"
                 android:layout_height="50px"
                 android:layout_marginBottom="10px"
