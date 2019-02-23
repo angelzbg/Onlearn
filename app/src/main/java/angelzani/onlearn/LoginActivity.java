@@ -81,6 +81,7 @@ public class LoginActivity extends AppCompatActivity {
             mRef.child("users").child(user.getUid()).child("role").addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    finish();
                     if(dataSnapshot.getValue(String.class).equals("admin")) startActivity(new Intent(LoginActivity.this, AdminActivity.class));
                     else startActivity(new Intent(LoginActivity.this, ClientActivity.class));
                 }
@@ -248,8 +249,9 @@ public class LoginActivity extends AppCompatActivity {
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                             if(dataSnapshot.getValue(String.class).equals("admin")) startActivity(new Intent(LoginActivity.this, AdminActivity.class));
                             else {
-                                startActivity(new Intent(LoginActivity.this, ClientActivity.class));
                                 finish();
+                                startActivity(new Intent(LoginActivity.this, ClientActivity.class));
+                                //finish();
                             }
                         }
                         @Override

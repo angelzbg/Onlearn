@@ -201,6 +201,7 @@ public class RegisterActivity extends AppCompatActivity {
         });
     }//end registerNewUser()
 
+    private boolean registered = false;
     private void finalizeRegistration(final String email, final String password, final String name, final String address, final String phone, final String dob){
         mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
             @Override
@@ -209,13 +210,31 @@ public class RegisterActivity extends AppCompatActivity {
 
                     final FirebaseUser user = mAuth.getCurrentUser();
                     final DatabaseReference dbRefUser = mRef.child("users").child(user.getUid());
-                    dbRefUser.child("name").setValue(name);
-                    dbRefUser.child("adr").setValue(address);
-                    dbRefUser.child("dob").setValue(dob);
-                    dbRefUser.child("phone").setValue(phone);
 
-                    startActivity(new Intent(RegisterActivity.this, ClientActivity.class));
-                    finish();
+                    mRef.child("users").child(user.getUid()).child("role").addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            if(dataSnapshot.exists() && !registered)
+                            {
+                                dbRefUser.child("name").setValue(name);
+                                dbRefUser.child("adr").setValue(address);
+                                dbRefUser.child("dob").setValue(dob);
+                                dbRefUser.child("phone").setValue(phone);
+
+                                registered=true;
+
+                                finish();
+                                startActivity(new Intent(RegisterActivity.this, ClientActivity.class));
+                                //finish();
+                            }
+                        }
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+                            hideProgress();
+                            showAlert("Error", databaseError.getMessage());
+                            //Toast.makeText(RegisterActivity.this, databaseError.getMessage(), Toast.LENGTH_LONG).show();
+                        }
+                    });
 
                     /*mRef.child("users").child(user.getUid()).child("role").addValueEventListener(new ValueEventListener() {
                         @Override
