@@ -40,7 +40,6 @@ public class ClientActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT); // Екрана в нормално състояние без да се завърта повече
         setContentView(R.layout.activity_client);
-        initializeUI();
 
         //Firebase
         mAuth = FirebaseAuth.getInstance();
@@ -51,6 +50,8 @@ public class ClientActivity extends AppCompatActivity {
         dbRefCourse = mRef.child("course");
         dbRefGroups = mRef.child("groups");
         dbRefParticipation = mRef.child("participation");
+
+        initializeUI();
 
     }//end onCreate()
 
