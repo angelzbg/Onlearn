@@ -4,13 +4,20 @@ import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Point;
+import android.graphics.drawable.AnimationDrawable;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.GradientDrawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
+import android.renderscript.Allocation;
+import android.renderscript.Element;
+import android.renderscript.RenderScript;
+import android.renderscript.ScriptIntrinsicBlur;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -19,6 +26,8 @@ import android.util.TypedValue;
 import android.view.Display;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
@@ -96,10 +105,48 @@ public class RegisterActivity extends AppCompatActivity {
         gradientDrawable.setCornerRadii(new float[] { _20px*2, _20px*2, _20px*4, _20px*4, _20px*2, _20px*2, _20px*4, _20px*4 });
         findViewById(R.id.register_LL_regBox).setBackground(gradientDrawable);
 
+        // Loading Progress Anim
+        findViewById(R.id.register_IV_LoadingBar).getLayoutParams().width = width/4;
+        findViewById(R.id.register_IV_LoadingBar).getLayoutParams().height = findViewById(R.id.register_IV_LoadingBar).getLayoutParams().width;
+
+        // Alert Message
+        findViewById(R.id.register_CL_Alert).setPadding(height/80,height/80,height/80,height/80);
+
+        gradientDrawable = new GradientDrawable();
+        gradientDrawable.setColor(Color.parseColor("#E9FFFFFF"));
+        gradientDrawable.setShape(GradientDrawable.RECTANGLE);
+        gradientDrawable.setCornerRadius(_20px/2);
+        findViewById(R.id.register_CL_AlertBox).setBackground(gradientDrawable);
+
+        ((TextView)findViewById(R.id.register_TV_AlertTitle)).setTextSize(TypedValue.COMPLEX_UNIT_PX, height/33);
+        findViewById(R.id.register_TV_AlertTitle).setPadding(0,height/80,0,height/80);
+
+        ((TextView)findViewById(R.id.register_TV_AlertMessage)).setTextSize(TypedValue.COMPLEX_UNIT_PX, _20px);
+        findViewById(R.id.register_TV_AlertMessage).setPadding(_20px,_20px,_20px,_20px);
+
+        ((TextView)findViewById(R.id.register_TV_AlertClose)).setTextSize(TypedValue.COMPLEX_UNIT_PX, _20px);
+        findViewById(R.id.register_TV_AlertClose).getLayoutParams().width = height/16;
+        findViewById(R.id.register_TV_AlertClose).getLayoutParams().height = findViewById(R.id.register_TV_AlertClose).getLayoutParams().width;
+        setMargins(findViewById(R.id.register_TV_AlertClose), 0,0,0,height/80);
+        gradientDrawable = new GradientDrawable();
+        gradientDrawable.setColor(Color.parseColor("#E5EEFC"));
+        gradientDrawable.setShape(GradientDrawable.OVAL);
+        gradientDrawable.setStroke(1, Color.parseColor("#82B1FF"));
+        findViewById(R.id.register_TV_AlertClose).setBackground(gradientDrawable);
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             findViewById(R.id.register_CL_header).setElevation(_20px/4);
             findViewById(R.id.register_LL_regBox).setElevation(_20px/2);
+
+            findViewById(R.id.register_CL_Loading).setElevation(_20px);
+            findViewById(R.id.register_CL_Alert).setElevation(_20px*2);
+
+            findViewById(R.id.register_CL_AlertBox).setElevation(_20px/4);
         }
+
+        animationLoading = (AnimationDrawable) findViewById(R.id.register_IV_LoadingBar).getBackground();
+        animationLoading.setOneShot(false);
+        animationLoading.start();
 
         //OnClickListeners
         findViewById(R.id.register_IB_back).setOnClickListener(goBack);
@@ -127,10 +174,17 @@ public class RegisterActivity extends AppCompatActivity {
                 ((TextView)findViewById(R.id.register_TV_dob)).setText(date);
             }
         };
+        findViewById(R.id.register_TV_AlertClose).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                findViewById(R.id.register_CL_Alert).setVisibility(View.INVISIBLE);
+            }
+        });
 
     } //end initializeUI()
 
     private void registerNewUser(final String email, final String password, final String name, final String address, final String phone, final String dob) {
+        showProgress();
         mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
@@ -139,10 +193,9 @@ public class RegisterActivity extends AppCompatActivity {
                     finalizeRegistration(email, password, name, address, phone, dob);
 
                 } else {
-                    // If sign in fails, display a message to the user.
-                    //Log.w(TAG, "createUserWithEmail:failure", task.getException());
-                    Toast.makeText(RegisterActivity.this, task.getException().getMessage(), Toast.LENGTH_LONG).show();
-                    //updateUI(null);
+                    hideProgress();
+                    showAlert("Error",task.getException().getMessage());
+                    //Toast.makeText(RegisterActivity.this, task.getException().getMessage(), Toast.LENGTH_LONG).show();
                 }
             }
         });
@@ -218,6 +271,7 @@ public class RegisterActivity extends AppCompatActivity {
                         }
                     });*/
                 }
+                else hideProgress();
             }
         });
     }
@@ -230,18 +284,21 @@ public class RegisterActivity extends AppCompatActivity {
 
             String email = ((EditText)findViewById(R.id.register_ET_email)).getText().toString().trim();
             if(!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()){
-                Toast.makeText(getApplicationContext(), "Please enter valid email address.", Toast.LENGTH_LONG).show();
+                showAlert("Alert","Email must be valid.");
+             //   Toast.makeText(getApplicationContext(), "Please enter valid email address.", Toast.LENGTH_LONG).show();
                 return;
             }
 
             String password = ((EditText)findViewById(R.id.register_ET_password)).getText().toString().trim();
             if(password.length() < 6) {
-                Toast.makeText(getApplicationContext(), "Password must contain at least 6 characters.", Toast.LENGTH_LONG).show();
+                showAlert("Alert","Password must contain at least 6 characters.");
+                //Toast.makeText(getApplicationContext(), "Password must contain at least 6 characters.", Toast.LENGTH_LONG).show();
                 return;
             }
 
             String name=((EditText)findViewById(R.id.register_ET_name)).getText().toString().trim();
             if(name.length()<2){
+                showAlert("Alert","Name must contain at least 2 characters.");
                 Toast.makeText(getApplicationContext(), "Name must contain at least 2 characters.", Toast.LENGTH_LONG).show();
                 return;
             }
@@ -254,7 +311,7 @@ public class RegisterActivity extends AppCompatActivity {
             if(!((TextView)findViewById(R.id.register_TV_dob)).getText().toString().trim().isEmpty()) dob=((TextView)findViewById(R.id.register_TV_dob)).getText().toString();
 
             if(!isInternetAvailable()) {
-                Toast.makeText(getApplicationContext(), "No Internet Connection.", Toast.LENGTH_LONG).show();
+                //Toast.makeText(getApplicationContext(), "No Internet Connection.", Toast.LENGTH_LONG).show();
                 return;
             }
 
@@ -273,6 +330,58 @@ public class RegisterActivity extends AppCompatActivity {
 
     /*----- On Click Listeners [  END  ] -----*/
 
+    private AnimationDrawable animationLoading;
+    private boolean isAnimationLoadingOn = false;
+    private void showProgress(){
+        findViewById(R.id.register_CL_Loading).setVisibility(View.VISIBLE);
+        //isAnimationLoadingOn = true;
+    }
+    private void hideProgress(){
+        //if(isAnimationLoadingOn) {
+        findViewById(R.id.register_CL_Loading).setVisibility(View.INVISIBLE);
+        //isAnimationLoadingOn = false;
+        //}
+    }
+
+    private void showAlert(final String title, final String message){
+        ((TextView)findViewById(R.id.register_TV_AlertTitle)).setText(title);
+        ((TextView)findViewById(R.id.register_TV_AlertMessage)).setText(message);
+
+        findViewById(R.id.register_CL_Alert).setBackground(new BitmapDrawable(getResources(), createBlurBitmapFromScreen()));
+        findViewById(R.id.register_CL_Alert).setVisibility(View.VISIBLE);
+        Animation expandIn = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.expand_in);
+        findViewById(R.id.register_CL_AlertBox).startAnimation(expandIn);
+    }
+
+    private Bitmap createBlurBitmapFromScreen() {
+        Bitmap bitmap = null;
+        findViewById(R.id.register_CL_main).setDrawingCacheEnabled(true);
+        bitmap = Bitmap.createBitmap(findViewById(R.id.register_CL_main).getDrawingCache());
+        findViewById(R.id.register_CL_main).setDrawingCacheEnabled(false);
+        bitmap = Bitmap.createScaledBitmap(bitmap, 480, 800, false);
+
+        Bitmap result = null;
+        try {
+            RenderScript rsScript = RenderScript.create(getApplicationContext());
+            Allocation alloc = Allocation.createFromBitmap(rsScript, bitmap);
+
+            ScriptIntrinsicBlur blur = ScriptIntrinsicBlur.create(rsScript, Element.U8_4(rsScript));
+            blur.setRadius(21);
+            blur.setInput(alloc);
+
+            result = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), Bitmap.Config.ARGB_8888);
+            Allocation outAlloc = Allocation.createFromBitmap(rsScript, result);
+
+            blur.forEach(outAlloc);
+            outAlloc.copyTo(result);
+
+            rsScript.destroy();
+        } catch (Exception e) {
+            return bitmap;
+        }
+        return result;
+    }
+
     //Utility
     private void setMargins (View v, int l, int t, int r, int b) {
         if (v.getLayoutParams() instanceof ViewGroup.MarginLayoutParams) {
@@ -286,6 +395,7 @@ public class RegisterActivity extends AppCompatActivity {
         ConnectivityManager cm = (ConnectivityManager)this.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
         boolean isConnected = activeNetwork != null && activeNetwork.isConnectedOrConnecting();
+        if(!isConnected) showAlert("Alert", "No internet connection.");
         return isConnected;
     }
 
