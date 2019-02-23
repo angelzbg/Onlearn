@@ -5,10 +5,13 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.Color;
 import android.graphics.Point;
+import android.graphics.drawable.AnimationDrawable;
 import android.graphics.drawable.GradientDrawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.constraint.ConstraintSet;
@@ -19,6 +22,8 @@ import android.view.Display;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -64,6 +69,7 @@ public class LoginActivity extends AppCompatActivity {
         FirebaseUser user = mAuth.getCurrentUser();
         if(user!=null){ // логнати сме
             //теглим атрибут role и роверяваме дали е client или admin -> ClientActivity || AdminActivity
+            showProgress();
             mRef.child("users").child(user.getUid()).child("role").addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -73,12 +79,12 @@ public class LoginActivity extends AppCompatActivity {
                 @Override
                 public void onCancelled(@NonNull DatabaseError databaseError) {
                     if(!isInternetAvailable()) {
+                        hideProgress();
                         Toast.makeText(getApplicationContext(), "No Internet Connection.", Toast.LENGTH_LONG).show();
-                        return;
                     }
                 }
             });
-        }
+        } else hideProgress();
     }//end onStart()
 
     private void initializeUI(){
@@ -124,10 +130,17 @@ public class LoginActivity extends AppCompatActivity {
         cs.connect(R.id.login_TV_Register, ConstraintSet.TOP, R.id.login_TI_Password, ConstraintSet.BOTTOM, _20px*2);
         cs.applyTo((ConstraintLayout)findViewById(R.id.login_CL_RegisterBox));
 
+        findViewById(R.id.login_IV_LoadingBar).getLayoutParams().width = width/5;
+        findViewById(R.id.login_IV_LoadingBar).getLayoutParams().height = findViewById(R.id.login_IV_LoadingBar).getLayoutParams().width;
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             findViewById(R.id.login_CL_RegisterWrap).setElevation(_20px/2);
             findViewById(R.id.login_TV_Logo).setElevation(_20px/2);
         }
+
+        animationLoading = (AnimationDrawable) findViewById(R.id.login_IV_LoadingBar).getBackground();
+        animationLoading.setOneShot(false);
+        animationLoading.start();
 
         //On Click Listeners
         findViewById(R.id.login_TV_Register).setOnClickListener(goToRegister);
@@ -174,6 +187,7 @@ public class LoginActivity extends AppCompatActivity {
     /*----- OnClickListeners [  END  ] -----*/
 
     private void login(final String email, final String password) {
+        showProgress();
         mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
@@ -195,8 +209,8 @@ public class LoginActivity extends AppCompatActivity {
                         @Override
                         public void onCancelled(@NonNull DatabaseError databaseError) {
                             if(!isInternetAvailable()) {
+                                hideProgress();
                                 Toast.makeText(getApplicationContext(), "No Internet Connection.", Toast.LENGTH_LONG).show();
-                                return;
                             }
                         }
                     });
@@ -204,12 +218,26 @@ public class LoginActivity extends AppCompatActivity {
                 } else {
                     // If sign in fails, display a message to the user.
                     //Log.w(TAG, "signInWithEmail:failure", task.getException());
+                    hideProgress();
                     Toast.makeText(LoginActivity.this, task.getException().getMessage(), Toast.LENGTH_LONG).show();
                     //updateUI(null);
                 }
             }
         });
     }//end login()
+
+    private AnimationDrawable animationLoading;
+    private boolean isAnimationLoadingOn = false;
+    private void showProgress(){
+        findViewById(R.id.login_CL_Loading).setVisibility(View.VISIBLE);
+        //isAnimationLoadingOn = true;
+    }
+    private void hideProgress(){
+        //if(isAnimationLoadingOn) {
+            findViewById(R.id.login_CL_Loading).setVisibility(View.INVISIBLE);
+            //isAnimationLoadingOn = false;
+        //}
+    }
 
     //Utility
     private boolean isInternetAvailable() {
