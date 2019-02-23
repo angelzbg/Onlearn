@@ -44,7 +44,7 @@
                 android:fontFamily="@font/roboto_regular"
                 android:text="Name"
                 android:textColor="@color/colorPrimary"
-                android:textSize="20px"
+                android:textSize="24px"
                 tools:layout_editor_absoluteX="45dp"
                 tools:layout_editor_absoluteY="24dp" />
         </LinearLayout>
