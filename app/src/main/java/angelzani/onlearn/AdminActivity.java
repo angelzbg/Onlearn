@@ -41,7 +41,6 @@ public class AdminActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT);
         setContentView(R.layout.activity_admin);
-        initializeUI();
 
         //Firebase
         mAuth = FirebaseAuth.getInstance();
@@ -52,6 +51,9 @@ public class AdminActivity extends AppCompatActivity {
         dbRefCourse=mRef.child("course");
         dbRefGroups=mRef.child("groups");
         dbRefParticipation=mRef.child("participation");
+
+
+        initializeUI();
 
     }//end onCreate()
 
