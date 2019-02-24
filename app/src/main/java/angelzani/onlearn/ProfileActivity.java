@@ -1,9 +1,13 @@
 package angelzani.onlearn;
 
+import android.app.Activity;
+import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.Color;
 import android.graphics.Point;
@@ -144,12 +148,28 @@ public class ProfileActivity extends AppCompatActivity {
             findViewById(R.id.profile_CL_header).setElevation(_20px/4);
         }
 
+        //logout
+        ((TextView)findViewById(R.id.profile_TV_Logout)).setTextSize(TypedValue.COMPLEX_UNIT_PX, height/33);
+        findViewById(R.id.profile_TV_Logout).setPadding(_10px,_20px,0,0);
+        findViewById(R.id.profile_TV_Logout).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mAuth.signOut();
+                Intent returnIntent = new Intent();
+                setResult(Activity.RESULT_OK,returnIntent);
+                finish();
+            }
+        });
+
+
         //Firebase
         dbRefUsers.child(user.getUid()).child("name").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if(dataSnapshot.exists()){
                     ((TextView)findViewById(R.id.profile_TV_name)).setText(dataSnapshot.getValue(String.class));
+                } else {
+                    ((TextView)findViewById(R.id.profile_TV_name)).setText("Unknown");
                 }
             }
             @Override
@@ -164,20 +184,8 @@ public class ProfileActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if(dataSnapshot.exists()){
                     ((TextView)findViewById(R.id.profile_TV_address)).setText(dataSnapshot.getValue(String.class));
-                }
-            }
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                if(!isInternetAvailable()){
-                    Toast.makeText(getApplicationContext(),"No internet",Toast.LENGTH_LONG).show();
-                }
-            }
-        });
-        dbRefUsers.child(user.getUid()).child("adr").addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if(dataSnapshot.exists()){
-                    ((TextView)findViewById(R.id.profile_TV_address)).setText(dataSnapshot.getValue(String.class));
+                } else {
+                    ((TextView)findViewById(R.id.profile_TV_address)).setText("Unknown");
                 }
             }
             @Override
@@ -192,6 +200,8 @@ public class ProfileActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if(dataSnapshot.exists()){
                     ((TextView)findViewById(R.id.profile_TV_phone)).setText(dataSnapshot.getValue(String.class));
+                } else {
+                    ((TextView)findViewById(R.id.profile_TV_phone)).setText("Unknown");
                 }
             }
             @Override
@@ -206,6 +216,8 @@ public class ProfileActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if(dataSnapshot.exists()){
                     ((TextView)findViewById(R.id.profile_TV_dob)).setText(dataSnapshot.getValue(String.class));
+                } else {
+                    ((TextView)findViewById(R.id.profile_TV_dob)).setText("Unknown");
                 }
             }
             @Override
@@ -227,6 +239,7 @@ public class ProfileActivity extends AppCompatActivity {
                 // Set an EditText view to get user input
                 final EditText input = new EditText(ProfileActivity.this);
                 alert.setView(input);
+                input.setText(((TextView)findViewById(R.id.profile_TV_name)).getText());
 
                 alert.setPositiveButton("Save", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int whichButton) {
@@ -272,6 +285,7 @@ public class ProfileActivity extends AppCompatActivity {
                 // Set an EditText view to get user input
                 final EditText input = new EditText(ProfileActivity.this);
                 alert.setView(input);
+                input.setText(((TextView)findViewById(R.id.profile_TV_address)).getText());
 
                 alert.setPositiveButton("Save", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int whichButton) {
@@ -319,6 +333,7 @@ public class ProfileActivity extends AppCompatActivity {
                 final EditText input = new EditText(ProfileActivity.this);
                 input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_CLASS_PHONE);
                 alert.setView(input);
+                input.setText(((TextView)findViewById(R.id.profile_TV_phone)).getText());
 
                 alert.setPositiveButton("Save", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int whichButton) {
@@ -327,7 +342,9 @@ public class ProfileActivity extends AppCompatActivity {
                             Toast.makeText(getApplicationContext(),"Phone must contain no more than 50 characters.", Toast.LENGTH_LONG).show();
                             return;
                         }
-                        dbRefUsers.child(user.getUid()).child("phone").setValue(input.getText().toString().trim(), new DatabaseReference.CompletionListener() {
+                        String phone = input.getText().toString().trim();
+                        if(phone.isEmpty()) phone = null;
+                        dbRefUsers.child(user.getUid()).child("phone").setValue(phone, new DatabaseReference.CompletionListener() {
                             @Override
                             public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
                                 if(databaseError!=null){

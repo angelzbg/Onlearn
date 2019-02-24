@@ -1,5 +1,6 @@
 package angelzani.onlearn;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
@@ -78,7 +79,7 @@ public class AdminActivity extends AppCompatActivity {
         findViewById(R.id.admin_LL_toProfile).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(AdminActivity.this, ProfileActivity.class));
+                startActivityForResult(new Intent(AdminActivity.this, ProfileActivity.class),1);
             }
         });
 
@@ -107,6 +108,20 @@ public class AdminActivity extends AppCompatActivity {
         ((TextView)findViewById(R.id.admin_TV_HM_manage)).setTextSize(TypedValue.COMPLEX_UNIT_PX, _20px);
         ((TextView)findViewById(R.id.admin_TV_HM_add)).setTextSize(TypedValue.COMPLEX_UNIT_PX, _20px);
     }
+
+    //Result logout
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        if (requestCode == 1) {
+            if(resultCode == Activity.RESULT_OK){
+                finish();
+            }
+            if (resultCode == Activity.RESULT_CANCELED) {
+                //Write your code if there's no result
+            }
+        }
+    }//onActivityResult
 
     //Utility
     private boolean isInternetAvailable() {

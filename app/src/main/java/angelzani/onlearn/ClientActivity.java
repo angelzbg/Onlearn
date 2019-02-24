@@ -1,5 +1,6 @@
 package angelzani.onlearn;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
@@ -73,7 +74,7 @@ public class ClientActivity extends AppCompatActivity {
         findViewById(R.id.client_LL_ToProfile).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(ClientActivity.this, ProfileActivity.class));
+                startActivityForResult(new Intent(ClientActivity.this, ProfileActivity.class),1);
             }
         });
         //Name text view
@@ -100,6 +101,20 @@ public class ClientActivity extends AppCompatActivity {
         ((TextView)findViewById(R.id.client_TV_HM_Ended)).setTextSize(TypedValue.COMPLEX_UNIT_PX, _20px);
 
     }
+
+    //Result logout
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        if (requestCode == 1) {
+            if(resultCode == Activity.RESULT_OK){
+                finish();
+            }
+            if (resultCode == Activity.RESULT_CANCELED) {
+                //Write your code if there's no result
+            }
+        }
+    }//onActivityResult
 
     //Utility
     private boolean isInternetAvailable() {

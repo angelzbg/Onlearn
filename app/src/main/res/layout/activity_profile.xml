@@ -230,6 +230,19 @@
                     app:layout_constraintStart_toEndOf="@+id/profile_IV_dob"
                     app:layout_constraintTop_toTopOf="@+id/profile_IV_dob" />
 
+                <TextView
+                    android:id="@+id/profile_TV_Logout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/roboto_medium"
+                    android:paddingStart="10px"
+                    android:paddingTop="20px"
+                    android:text="Logout"
+                    android:textColor="@color/red1"
+                    android:textSize="24px"
+                    app:layout_constraintStart_toStartOf="@+id/profile_TV_dob"
+                    app:layout_constraintTop_toBottomOf="@+id/profile_IV_dob" />
+
             </android.support.constraint.ConstraintLayout>
         </LinearLayout>
     </ScrollView>

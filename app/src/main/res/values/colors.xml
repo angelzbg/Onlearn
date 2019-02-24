@@ -17,4 +17,6 @@
     <color name="text_shadow_white">#FFFFFF</color>
 
     <color name="white_transparent1">#E9FFFFFF</color>
+
+    <color name="red1">#D50000</color>
 </resources>
