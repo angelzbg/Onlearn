@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="angelzani.onlearn">
 
-    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:allowBackup="true"
@@ -12,7 +12,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:windowSoftInputMode="adjustResize">
-        <activity android:name=".CourseActivity"></activity>
+        <activity android:name=".ManageActivity"></activity>
+        <activity android:name=".CourseActivity" />
         <activity android:name=".AdminActivity" />
         <activity android:name=".ClientActivity" />
         <activity android:name=".ProfileActivity" />
