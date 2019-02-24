@@ -5,8 +5,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.Point;
+import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -99,8 +101,50 @@ public class ClientActivity extends AppCompatActivity {
         ((TextView)findViewById(R.id.client_TV_HM_All)).setTextSize(TypedValue.COMPLEX_UNIT_PX, _20px);
         ((TextView)findViewById(R.id.client_TV_HM_Ongoing)).setTextSize(TypedValue.COMPLEX_UNIT_PX, _20px);
         ((TextView)findViewById(R.id.client_TV_HM_Ended)).setTextSize(TypedValue.COMPLEX_UNIT_PX, _20px);
+        findViewById(R.id.client_TV_HM_All).setOnClickListener(switchMenu);
+        findViewById(R.id.client_TV_HM_Ongoing).setOnClickListener(switchMenu);
+        findViewById(R.id.client_TV_HM_Ended).setOnClickListener(switchMenu);
 
-    }
+        // ---------- Elevations
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
+            findViewById(R.id.client_LL_HeadMenu).setElevation(_20px/4);
+        }
+
+    }// end of InitializeUI()
+
+    /* ----- OnClickListeners [ START ] ----- */
+
+    View.OnClickListener switchMenu = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+
+            findViewById(R.id.client_TV_HM_All).setBackgroundResource(R.drawable.background_tab_menu_unselected);
+            findViewById(R.id.client_TV_HM_Ongoing).setBackgroundResource(R.drawable.background_tab_menu_unselected);
+            findViewById(R.id.client_TV_HM_Ended).setBackgroundResource(R.drawable.background_tab_menu_unselected);
+            v.setBackgroundResource(R.drawable.background_tab_menu_selected);
+
+            switch (v.getId()){
+                case R.id.client_TV_HM_All:
+                    findViewById(R.id.client_CL_OngoingLayout).setVisibility(View.INVISIBLE);
+                    findViewById(R.id.client_CL_EndedLayout).setVisibility(View.INVISIBLE);
+                    findViewById(R.id.client_CL_AllLayout).setVisibility(View.VISIBLE); // само all layout се вижда
+                    break;
+                case R.id.client_TV_HM_Ongoing:
+                    findViewById(R.id.client_CL_AllLayout).setVisibility(View.INVISIBLE);
+                    findViewById(R.id.client_CL_EndedLayout).setVisibility(View.INVISIBLE);
+                    findViewById(R.id.client_CL_OngoingLayout).setVisibility(View.VISIBLE); // само ongoing layout се вижда
+                    break;
+                case R.id.client_TV_HM_Ended:
+                    findViewById(R.id.client_CL_OngoingLayout).setVisibility(View.INVISIBLE);
+                    findViewById(R.id.client_CL_AllLayout).setVisibility(View.INVISIBLE);
+                    findViewById(R.id.client_CL_EndedLayout).setVisibility(View.VISIBLE); // само ended layout се вижда
+                    break;
+            }
+
+        }
+    };
+
+    /* ----- OnClickListeners [  END  ] ----- */
 
     //Result logout
     @Override
