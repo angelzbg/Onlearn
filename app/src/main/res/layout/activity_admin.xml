@@ -122,7 +122,7 @@
                 android:id="@+id/admin_LL_manageWrap"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical" >
+                android:orientation="vertical">
 
             </LinearLayout>
         </ScrollView>
@@ -137,5 +137,205 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/admin_CL_manageLayout"/>
+        app:layout_constraintTop_toTopOf="@+id/admin_CL_manageLayout">
+
+        <ScrollView
+            android:id="@+id/admin_SV_addWrap"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <LinearLayout
+                android:id="@+id/admin_LL_addWrap"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <android.support.constraint.ConstraintLayout
+                    android:id="@+id/admin_CL_addCourse"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="20px"
+                    android:background="@color/white">
+
+                    <TextView
+                        android:id="@+id/admin_TV_addTitle"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="20px"
+                        android:layout_marginTop="20px"
+                        android:layout_marginEnd="20px"
+                        android:fontFamily="@font/roboto_medium"
+                        android:hint="Course Name"
+                        android:textColor="@color/black"
+                        android:textSize="20px"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <View
+                        android:id="@+id/admin_V_seperator1"
+                        android:layout_width="0dp"
+                        android:layout_height="1px"
+                        android:layout_marginTop="20px"
+                        android:background="@color/light_blue2"
+                        app:layout_constraintEnd_toEndOf="@+id/admin_TV_addTitle"
+                        app:layout_constraintStart_toStartOf="@+id/admin_TV_addTitle"
+                        app:layout_constraintTop_toBottomOf="@+id/admin_TV_addTitle" />
+
+                    <TextView
+                        android:id="@+id/admin_TV_addDescr"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10px"
+                        android:fontFamily="@font/roboto_regular"
+                        android:hint="Description"
+                        android:minLines="5"
+                        android:padding="5px"
+                        android:textColor="@color/black"
+                        android:textSize="20px"
+                        app:layout_constraintEnd_toEndOf="@+id/admin_V_seperator1"
+                        app:layout_constraintStart_toStartOf="@+id/admin_V_seperator1"
+                        app:layout_constraintTop_toBottomOf="@+id/admin_V_seperator1" />
+
+                    <TextView
+                        android:id="@+id/admin_TV_addSave"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10px"
+                        android:layout_marginBottom="10px"
+                        android:background="@color/green1"
+                        android:fontFamily="@font/roboto_medium"
+                        android:paddingStart="10px"
+                        android:paddingTop="5px"
+                        android:paddingEnd="10px"
+                        android:paddingBottom="5px"
+                        android:text="SAVE"
+                        android:textColor="@color/white"
+                        android:textSize="15px"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/admin_TV_addDescr" />
+
+                    <TextView
+                        android:id="@+id/admin_TV_addClear"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10px"
+                        android:layout_marginBottom="10px"
+                        android:background="@color/red1"
+                        android:fontFamily="@font/roboto_medium"
+                        android:paddingStart="10px"
+                        android:paddingTop="5px"
+                        android:paddingEnd="10px"
+                        android:paddingBottom="5px"
+                        android:text="CLEAR"
+                        android:textColor="@color/white"
+                        android:textSize="15px"
+                        android:visibility="invisible"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/admin_TV_addDescr" />
+
+                </android.support.constraint.ConstraintLayout>
+
+                <LinearLayout
+                    android:id="@+id/admin_LL_groups"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"></LinearLayout>
+
+                <android.support.constraint.ConstraintLayout
+                    android:id="@+id/admin_CL_buttonAddGroup"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end"
+                    android:layout_marginTop="10px"
+                    android:layout_marginEnd="20px"
+                    android:background="@color/light_blue2"
+                    android:paddingStart="20px"
+                    android:paddingTop="5px"
+                    android:paddingEnd="20px"
+                    android:paddingBottom="5px"
+                    android:visibility="invisible">
+
+                    <ImageView
+                        android:id="@+id/admin_IV_addGroupPlus"
+                        android:layout_width="30px"
+                        android:layout_height="30px"
+                        android:tint="@color/white"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:srcCompat="@drawable/icon_plus" />
+
+                    <TextView
+                        android:id="@+id/admin_TV_addGroup"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/roboto_regular"
+                        android:paddingEnd="20px"
+                        android:text="ADD GROUP"
+                        android:textColor="@color/white"
+                        android:textSize="15px"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toStartOf="@+id/admin_IV_addGroupPlus"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+                </android.support.constraint.ConstraintLayout>
+
+                <LinearLayout
+                    android:id="@+id/admin_LL_materials"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"></LinearLayout>
+
+                <android.support.constraint.ConstraintLayout
+                    android:id="@+id/admin_CL_buttonAddMaterial"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end"
+                    android:layout_marginTop="10px"
+                    android:layout_marginEnd="20px"
+                    android:background="@color/light_blue2"
+                    android:paddingStart="20px"
+                    android:paddingTop="5px"
+                    android:paddingEnd="20px"
+                    android:paddingBottom="5px"
+                    android:visibility="invisible">
+
+                    <ImageView
+                        android:id="@+id/admin_IV_addMaterialPlus"
+                        android:layout_width="30px"
+                        android:layout_height="30px"
+                        android:tint="@color/white"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:srcCompat="@drawable/icon_plus" />
+
+                    <TextView
+                        android:id="@+id/admin_TV_addMaterial"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/roboto_regular"
+                        android:paddingEnd="20px"
+                        android:text="ADD MATERIAL"
+                        android:textColor="@color/white"
+                        android:textSize="15px"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toStartOf="@+id/admin_IV_addMaterialPlus"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+                </android.support.constraint.ConstraintLayout>
+
+            </LinearLayout>
+        </ScrollView>
+
+    </android.support.constraint.ConstraintLayout>
 </android.support.constraint.ConstraintLayout>
