@@ -5,6 +5,7 @@
     android:id="@+id/client_CL_Main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/originalBackground"
     tools:context=".ClientActivity">
 
     <android.support.constraint.ConstraintLayout
