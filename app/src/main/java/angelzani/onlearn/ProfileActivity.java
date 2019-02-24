@@ -14,10 +14,12 @@ import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.GradientDrawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.renderscript.Allocation;
 import android.renderscript.Element;
 import android.renderscript.RenderScript;
@@ -414,11 +416,40 @@ public class ProfileActivity extends AppCompatActivity {
                 });
             }
         };
+
+        // Alert Message
+        findViewById(R.id.profile_CL_Alert).setPadding(height/80,height/80,height/80,height/80);
+
+        GradientDrawable gradientDrawable = new GradientDrawable();
+        gradientDrawable.setColor(Color.parseColor("#E9FFFFFF"));
+        gradientDrawable.setShape(GradientDrawable.RECTANGLE);
+        gradientDrawable.setCornerRadius(_20px/2);
+        findViewById(R.id.profile_CL_AlertBox).setBackground(gradientDrawable);
+
+        ((TextView)findViewById(R.id.profile_TV_AlertTitle)).setTextSize(TypedValue.COMPLEX_UNIT_PX, height/33);
+        findViewById(R.id.profile_TV_AlertTitle).setPadding(0,height/80,0,height/80);
+
+        ((TextView)findViewById(R.id.profile_TV_AlertMessage)).setTextSize(TypedValue.COMPLEX_UNIT_PX, _20px);
+        findViewById(R.id.profile_TV_AlertMessage).setPadding(_20px,_20px,_20px,_20px);
+
+        ((TextView)findViewById(R.id.profile_TV_AlertClose)).setTextSize(TypedValue.COMPLEX_UNIT_PX, _20px);
+        findViewById(R.id.profile_TV_AlertClose).getLayoutParams().width = height/16;
+        findViewById(R.id.profile_TV_AlertClose).getLayoutParams().height = findViewById(R.id.profile_TV_AlertClose).getLayoutParams().width;
+        setMargins(findViewById(R.id.profile_TV_AlertClose), 0,0,0,height/80);
+        gradientDrawable = new GradientDrawable();
+        gradientDrawable.setColor(Color.parseColor("#E5EEFC"));
+        gradientDrawable.setShape(GradientDrawable.OVAL);
+        gradientDrawable.setStroke(1, Color.parseColor("#82B1FF"));
+        findViewById(R.id.profile_TV_AlertClose).setBackground(gradientDrawable);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            findViewById(R.id.profile_CL_Alert).setElevation(_20px*2);
+            findViewById(R.id.profile_CL_AlertBox).setElevation(_20px/4);
+        }
         // Alert dialog close
-        findViewById(R.id.register_TV_AlertClose).setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.profile_TV_AlertClose).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                findViewById(R.id.register_CL_Alert).setVisibility(View.INVISIBLE);
+                findViewById(R.id.profile_CL_Alert).setVisibility(View.INVISIBLE);
             }
         });
 
@@ -428,19 +459,25 @@ public class ProfileActivity extends AppCompatActivity {
 
     //Alert
     private void showAlert(final String title, final String message){
-        ((TextView)findViewById(R.id.profile_TV_AlertTitle)).setText(title);
-        ((TextView)findViewById(R.id.profile_TV_AlertMessage)).setText(message);
+        final Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                ((TextView)findViewById(R.id.profile_TV_AlertTitle)).setText(title);
+                ((TextView)findViewById(R.id.profile_TV_AlertMessage)).setText(message);
 
-        findViewById(R.id.profile_CL_Alert).setBackground(new BitmapDrawable(getResources(), createBlurBitmapFromScreen()));
-        findViewById(R.id.profile_CL_Alert).setVisibility(View.VISIBLE);
-        Animation expandIn = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.expand_in);
-        findViewById(R.id.profile_CL_AlertBox).startAnimation(expandIn);
+                findViewById(R.id.profile_CL_Alert).setBackground(new BitmapDrawable(getResources(), createBlurBitmapFromScreen()));
+                findViewById(R.id.profile_CL_Alert).setVisibility(View.VISIBLE);
+                Animation expandIn = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.expand_in);
+                findViewById(R.id.profile_CL_AlertBox).startAnimation(expandIn);
+            }
+        }, 250);
     }
 
     private Bitmap createBlurBitmapFromScreen() {
         Bitmap bitmap = null;
         findViewById(R.id.profile_CL_main).setDrawingCacheEnabled(true);
-        bitmap = Bitmap.createBitmap(findViewById(R.id.register_CL_main).getDrawingCache());
+        bitmap = Bitmap.createBitmap(findViewById(R.id.profile_CL_main).getDrawingCache());
         findViewById(R.id.profile_CL_main).setDrawingCacheEnabled(false);
         bitmap = Bitmap.createScaledBitmap(bitmap, 480, 800, false);
 
