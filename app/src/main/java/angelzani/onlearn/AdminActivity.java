@@ -137,9 +137,9 @@ public class AdminActivity extends AppCompatActivity {
         query.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                String courseId = dataSnapshot.getKey();
-                String descripton = dataSnapshot.child("descr").getValue(String.class);
-                String lecturerId = dataSnapshot.child("lect").getValue(String.class);
+                final String courseId = dataSnapshot.getKey();
+                final String descripton = dataSnapshot.child("descr").getValue(String.class);
+                final String lecturerId = dataSnapshot.child("lect").getValue(String.class);
                 CLCourse courseLayout = new CLCourse(getApplicationContext(),courseId,descripton,lecturerId);
                 courseLayout.setId(View.generateViewId());
 
@@ -148,6 +148,17 @@ public class AdminActivity extends AppCompatActivity {
                 courseLayout.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
 
                 ((LinearLayout)findViewById(R.id.admin_LL_manageWrap)).addView(courseLayout);
+
+                courseLayout.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent intent = new Intent(AdminActivity.this, CourseActivity.class);
+                        intent.putExtra("courseId", courseId);
+                        intent.putExtra("description", descripton);
+                        intent.putExtra("lecturerId", lecturerId);
+                        startActivity(intent);
+                    }
+                });
 
                 setMargins(courseLayout, _20px,_20px,_20px,_20px/8);
                 if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
