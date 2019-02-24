@@ -172,6 +172,7 @@ public class RegisterActivity extends AppCompatActivity {
                 ((TextView)findViewById(R.id.register_TV_dob)).setText(date);
             }
         };
+        // Alert dialog close
         findViewById(R.id.register_TV_AlertClose).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
