@@ -9,13 +9,19 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Point;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Bundle;
+import android.renderscript.Allocation;
+import android.renderscript.Element;
+import android.renderscript.RenderScript;
+import android.renderscript.ScriptIntrinsicBlur;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -25,6 +31,8 @@ import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -175,7 +183,7 @@ public class ProfileActivity extends AppCompatActivity {
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
                 if(!isInternetAvailable()){
-                    Toast.makeText(getApplicationContext(),"No internet",Toast.LENGTH_LONG).show();
+                    //Toast.makeText(getApplicationContext(),"No internet",Toast.LENGTH_LONG).show();
                 }
             }
         });
@@ -191,7 +199,7 @@ public class ProfileActivity extends AppCompatActivity {
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
                 if(!isInternetAvailable()){
-                    Toast.makeText(getApplicationContext(),"No internet",Toast.LENGTH_LONG).show();
+                    //Toast.makeText(getApplicationContext(),"No internet",Toast.LENGTH_LONG).show();
                 }
             }
         });
@@ -207,7 +215,7 @@ public class ProfileActivity extends AppCompatActivity {
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
                 if(!isInternetAvailable()){
-                    Toast.makeText(getApplicationContext(),"No internet",Toast.LENGTH_LONG).show();
+                    //Toast.makeText(getApplicationContext(),"No internet",Toast.LENGTH_LONG).show();
                 }
             }
         });
@@ -223,7 +231,7 @@ public class ProfileActivity extends AppCompatActivity {
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
                 if(!isInternetAvailable()){
-                    Toast.makeText(getApplicationContext(),"No internet",Toast.LENGTH_LONG).show();
+                    //Toast.makeText(getApplicationContext(),"No internet",Toast.LENGTH_LONG).show();
                 }
             }
         });
@@ -244,18 +252,21 @@ public class ProfileActivity extends AppCompatActivity {
                 alert.setPositiveButton("Save", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int whichButton) {
                         if(input.getText().toString().trim().length()<2){
-                            Toast.makeText(getApplicationContext(),"Name must contain at least 2 characters.", Toast.LENGTH_LONG).show();
+                            showAlert("Alert", "Name must contain at least 2 characters.");
+                            //Toast.makeText(getApplicationContext(),"Name must contain at least 2 characters.", Toast.LENGTH_LONG).show();
                             return;
                         }
                         if(input.getText().toString().trim().length()>100){
-                            Toast.makeText(getApplicationContext(),"Name must contain no more than 100 characters.", Toast.LENGTH_LONG).show();
+                            showAlert("Alert", "Name must contain no more than 100 characters.");
+                            //Toast.makeText(getApplicationContext(),"Name must contain no more than 100 characters.", Toast.LENGTH_LONG).show();
                             return;
                         }
                         dbRefUsers.child(user.getUid()).child("name").setValue(input.getText().toString().trim(), new DatabaseReference.CompletionListener() {
                             @Override
                             public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
                                 if(databaseError!=null){
-                                    Toast.makeText(getApplicationContext(),databaseError.getMessage(), Toast.LENGTH_LONG).show();
+                                    showAlert("Error", databaseError.getMessage());
+                                    //Toast.makeText(getApplicationContext(),databaseError.getMessage(), Toast.LENGTH_LONG).show();
                                 }
                             }
                         });
@@ -290,18 +301,21 @@ public class ProfileActivity extends AppCompatActivity {
                 alert.setPositiveButton("Save", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int whichButton) {
                         if(input.getText().toString().trim().length()<6){
-                            Toast.makeText(getApplicationContext(),"Address must contain at least 6 characters.", Toast.LENGTH_LONG).show();
+                            showAlert("Alert", "Address must contain at least 6 characters.");
+                            //Toast.makeText(getApplicationContext(),"Address must contain at least 6 characters.", Toast.LENGTH_LONG).show();
                             return;
                         }
                         if(input.getText().toString().trim().length()>100){
-                            Toast.makeText(getApplicationContext(),"Address must contain no more than 100 characters.", Toast.LENGTH_LONG).show();
+                            showAlert("Alert", "Address must contain no more than 100 characters.");
+                            //Toast.makeText(getApplicationContext(),"Address must contain no more than 100 characters.", Toast.LENGTH_LONG).show();
                             return;
                         }
                         dbRefUsers.child(user.getUid()).child("adr").setValue(input.getText().toString().trim(), new DatabaseReference.CompletionListener() {
                             @Override
                             public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
                                 if(databaseError!=null){
-                                    Toast.makeText(getApplicationContext(),databaseError.getMessage(), Toast.LENGTH_LONG).show();
+                                    showAlert("Error", databaseError.getMessage());
+                                    //Toast.makeText(getApplicationContext(),databaseError.getMessage(), Toast.LENGTH_LONG).show();
                                 }
                             }
                         });
@@ -339,7 +353,8 @@ public class ProfileActivity extends AppCompatActivity {
                     public void onClick(DialogInterface dialog, int whichButton) {
 
                         if(input.getText().toString().trim().length()>50){
-                            Toast.makeText(getApplicationContext(),"Phone must contain no more than 50 characters.", Toast.LENGTH_LONG).show();
+                            showAlert("Alert", "Phone must contain no more than 50 characters.");
+                            // Toast.makeText(getApplicationContext(),"Phone must contain no more than 50 characters.", Toast.LENGTH_LONG).show();
                             return;
                         }
                         String phone = input.getText().toString().trim();
@@ -348,7 +363,8 @@ public class ProfileActivity extends AppCompatActivity {
                             @Override
                             public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
                                 if(databaseError!=null){
-                                    Toast.makeText(getApplicationContext(),databaseError.getMessage(), Toast.LENGTH_LONG).show();
+                                    showAlert("Error", databaseError.getMessage());
+                                    //Toast.makeText(getApplicationContext(),databaseError.getMessage(), Toast.LENGTH_LONG).show();
                                 }
                             }
                         });
@@ -391,22 +407,71 @@ public class ProfileActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
                         if(databaseError!=null){
-                            Toast.makeText(getApplicationContext(),databaseError.getMessage(), Toast.LENGTH_LONG).show();
+                            showAlert("Error", databaseError.getMessage());
+                            //oast.makeText(getApplicationContext(),databaseError.getMessage(), Toast.LENGTH_LONG).show();
                         }
                     }
                 });
             }
         };
+        // Alert dialog close
+        findViewById(R.id.register_TV_AlertClose).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                findViewById(R.id.register_CL_Alert).setVisibility(View.INVISIBLE);
+            }
+        });
+
 
     }// end of initializeUI()
     private DatePickerDialog.OnDateSetListener mDateSetListener;
+
+    //Alert
+    private void showAlert(final String title, final String message){
+        ((TextView)findViewById(R.id.profile_TV_AlertTitle)).setText(title);
+        ((TextView)findViewById(R.id.profile_TV_AlertMessage)).setText(message);
+
+        findViewById(R.id.profile_CL_Alert).setBackground(new BitmapDrawable(getResources(), createBlurBitmapFromScreen()));
+        findViewById(R.id.profile_CL_Alert).setVisibility(View.VISIBLE);
+        Animation expandIn = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.expand_in);
+        findViewById(R.id.profile_CL_AlertBox).startAnimation(expandIn);
+    }
+
+    private Bitmap createBlurBitmapFromScreen() {
+        Bitmap bitmap = null;
+        findViewById(R.id.profile_CL_main).setDrawingCacheEnabled(true);
+        bitmap = Bitmap.createBitmap(findViewById(R.id.register_CL_main).getDrawingCache());
+        findViewById(R.id.profile_CL_main).setDrawingCacheEnabled(false);
+        bitmap = Bitmap.createScaledBitmap(bitmap, 480, 800, false);
+
+        Bitmap result = null;
+        try {
+            RenderScript rsScript = RenderScript.create(getApplicationContext());
+            Allocation alloc = Allocation.createFromBitmap(rsScript, bitmap);
+
+            ScriptIntrinsicBlur blur = ScriptIntrinsicBlur.create(rsScript, Element.U8_4(rsScript));
+            blur.setRadius(21);
+            blur.setInput(alloc);
+
+            result = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), Bitmap.Config.ARGB_8888);
+            Allocation outAlloc = Allocation.createFromBitmap(rsScript, result);
+
+            blur.forEach(outAlloc);
+            outAlloc.copyTo(result);
+
+            rsScript.destroy();
+        } catch (Exception e) {
+            return bitmap;
+        }
+        return result;
+    }
 
     //Utility
     private boolean isInternetAvailable() {
         ConnectivityManager cm = (ConnectivityManager)this.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
         boolean isConnected = activeNetwork != null && activeNetwork.isConnectedOrConnecting();
-        //if(!isConnected) showAlert("Alert", "No internet connection.");
+        if(!isConnected) showAlert("Alert", "No internet connection.");
         return isConnected;
     }
 

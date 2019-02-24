@@ -247,4 +247,81 @@
         </LinearLayout>
     </ScrollView>
 
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/profile_CL_Alert"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:clickable="true"
+        android:padding="10px"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <android.support.constraint.ConstraintLayout
+            android:id="@+id/profile_CL_AlertBox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@color/white_transparent1"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:id="@+id/profile_TV_AlertTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/roboto_medium"
+                android:paddingTop="10px"
+                android:paddingBottom="10px"
+                android:text="Title"
+                android:textColor="@color/black"
+                android:textSize="24px"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <LinearLayout
+                android:id="@+id/profile_LL_AlertSeparator1"
+                android:layout_width="0dp"
+                android:layout_height="0.5dp"
+                android:background="#82B1FF"
+                android:orientation="vertical"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/profile_TV_AlertTitle"></LinearLayout>
+
+            <TextView
+                android:id="@+id/profile_TV_AlertMessage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/roboto_regular"
+                android:gravity="center"
+                android:padding="20px"
+                android:text="Alert Message"
+                android:textColor="@color/black"
+                android:textSize="20px"
+                app:layout_constraintBottom_toTopOf="@+id/profile_TV_AlertClose"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/profile_LL_AlertSeparator1" />
+
+            <TextView
+                android:id="@+id/profile_TV_AlertClose"
+                android:layout_width="50px"
+                android:layout_height="50px"
+                android:layout_marginBottom="10px"
+                android:background="@color/light_blue2"
+                android:fontFamily="@font/roboto_light"
+                android:gravity="center"
+                android:text="✕"
+                android:textSize="20px"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+        </android.support.constraint.ConstraintLayout>
+    </android.support.constraint.ConstraintLayout>
+
 </android.support.constraint.ConstraintLayout>
