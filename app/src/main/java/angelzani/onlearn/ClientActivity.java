@@ -213,6 +213,7 @@ public class ClientActivity extends AppCompatActivity { // Ангел
                 cs.connect(titleView.getId(), ConstraintSet.START, ConstraintSet.PARENT_ID, ConstraintSet.START, _20px);
                 cs.connect(titleView.getId(), ConstraintSet.TOP, ConstraintSet.PARENT_ID, ConstraintSet.TOP, _20px);
                 cs.connect(titleView.getId(), ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END,_20px);
+                cs.connect(titleView.getId(), ConstraintSet.BOTTOM, ConstraintSet.PARENT_ID, ConstraintSet.BOTTOM,_20px);
                 cs.applyTo(courseLayout);
 
                 titleView.setText(courseInfo.name_Id);
