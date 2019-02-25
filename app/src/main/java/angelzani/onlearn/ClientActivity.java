@@ -56,7 +56,7 @@ public class ClientActivity extends AppCompatActivity {
 
         initializeUI();
 
-        //za trirnr
+        //za triene
         findViewById(R.id.client_CL_OngoingLayout).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
