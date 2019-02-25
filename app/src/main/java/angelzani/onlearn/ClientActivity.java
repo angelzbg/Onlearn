@@ -1,7 +1,9 @@
 package angelzani.onlearn;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.Color;
@@ -21,6 +23,8 @@ import android.util.TypedValue;
 import android.view.Display;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewManager;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -128,13 +132,59 @@ public class ClientActivity extends AppCompatActivity { // Ангел
         gradientDrawableBackgroundSearch.setShape(GradientDrawable.RECTANGLE);
         gradientDrawableBackgroundSearch.setCornerRadius(_20px);
         findViewById(R.id.client_TV_Search).setBackground(gradientDrawableBackgroundSearch);
+        findViewById(R.id.client_TV_Search).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AlertDialog.Builder alert = new AlertDialog.Builder(ClientActivity.this);
+                alert.setTitle("Search by Course Name : ");
+                //lert.setMessage("Message :");
+
+                // Set an EditText view to get user input
+                final EditText input = new EditText(ClientActivity.this);
+                alert.setView(input);
+                input.setText(((TextView)findViewById(R.id.client_TV_Search)).getText());
+
+                alert.setPositiveButton("Search", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        if(input.getText().toString().trim().length() == 0){
+                            //showAlert("Alert", "Name must contain at least 2 characters.");
+                            return;
+                        }
+
+                        ((TextView)findViewById(R.id.client_TV_Search)).setText(input.getText().toString().trim());
+                        // Заявка
+
+
+
+                        findViewById(R.id.client_SV_All).setVisibility(View.INVISIBLE);
+                        findViewById(R.id.client_TV_ClearSearch).setVisibility(View.VISIBLE);
+                        findViewById(R.id.client_SV_SearchResult).setVisibility(View.VISIBLE);
+
+                        return;
+                    }
+                });
+
+                alert.setNegativeButton("Cancel",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                // TODO Auto-generated method stub
+                                return;
+                            }
+                        });
+                alert.show();
+            }
+        });
         findViewById(R.id.client_TV_ClearSearch).getLayoutParams().width = height/27;
         findViewById(R.id.client_TV_ClearSearch).getLayoutParams().height = height/27;
         ((TextView)findViewById(R.id.client_TV_ClearSearch)).setTextSize(TypedValue.COMPLEX_UNIT_PX, _20px/2);
         findViewById(R.id.client_TV_ClearSearch).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // CLEAR SEARCH LOGIC
+                ((LinearLayout)findViewById(R.id.client_LL_SearchResult)).removeAllViews();
+                findViewById(R.id.client_TV_ClearSearch).setVisibility(View.INVISIBLE);
+                findViewById(R.id.client_SV_SearchResult).setVisibility(View.INVISIBLE);
+                findViewById(R.id.client_SV_All).setVisibility(View.VISIBLE);
+                ((TextView)findViewById(R.id.client_TV_Search)).setText("");
             }
         });
 
@@ -154,10 +204,11 @@ public class ClientActivity extends AppCompatActivity { // Ангел
         dbRefCourse.orderByKey().addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                // ----- Зареждаме в ALL
                 final Course courseInfo = new Course(dataSnapshot.getKey(), dataSnapshot.child("descr").getValue(String.class), dataSnapshot.child("lect").getValue(String.class));
                 courses.add(courseInfo);
 
-                ConstraintLayout courseLayout = new ConstraintLayout(getApplicationContext());
+                final ConstraintLayout courseLayout = new ConstraintLayout(getApplicationContext());
                 courseLayout.setId(View.generateViewId());
 
                 courseLayout.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
@@ -189,7 +240,7 @@ public class ClientActivity extends AppCompatActivity { // Ангел
                             @Override
                             public void onCancelled(@NonNull DatabaseError databaseError) {
                                 if(!isInternetAvailable()) Toast.makeText(getApplicationContext(), "No internet connection.", Toast.LENGTH_LONG).show();
-                                if(databaseError != null) Toast.makeText(getApplicationContext(), "pri proverka za grupata: " + databaseError.getMessage(), Toast.LENGTH_LONG).show();
+                                if(databaseError != null) Toast.makeText(getApplicationContext(), databaseError.getMessage(), Toast.LENGTH_LONG).show();
                             }
                         });
                     }
@@ -221,23 +272,55 @@ public class ClientActivity extends AppCompatActivity { // Ангел
                 titleView.setTextColor(getResources().getColor(R.color.light_blue3));
                 titleView.setMaxLines(2);
 
-            }
+                // ----- Зареждаме в ONGOING || ENDED
+                dbRefParticipation.child(courseInfo.name_Id).child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        final String groupIdCurrentBlock = dataSnapshot.getValue(String.class);
+                        if(dataSnapshot.exists()){ // записан е в тази дисциплина
 
+                            courseLayout.setOnClickListener(new View.OnClickListener() { // ще променим кликъра да не тегли излишно от датабазата (знаем че е записан)
+                                @Override
+                                public void onClick(View v) {
+                                    Intent intent = new Intent(ClientActivity.this, SignedCourseActivity.class);
+                                    intent.putExtra("courseId", courseInfo.name_Id);
+                                    intent.putExtra("description",courseInfo.description);
+                                    intent.putExtra("lecturerId",courseInfo.lecturerId);
+                                    intent.putExtra("groupId", groupIdCurrentBlock);
+                                    startActivity(intent);
+                                }
+                            });
+
+                            dbRefGroups.child(courseInfo.name_Id).child(dataSnapshot.getValue(String.class)).child("end").addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                    ((ViewManager)courseLayout.getParent()).removeView(courseLayout);
+                                    if(dataSnapshot.getValue(Long.class) > System.currentTimeMillis()) { // отива в ONGOING
+                                        ((LinearLayout)findViewById(R.id.client_LL_Ongoing)).addView(courseLayout);
+                                    } else { // отива в ENDED
+                                        ((LinearLayout)findViewById(R.id.client_LL_Ended)).addView(courseLayout);
+                                    }
+                                }
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError databaseError) { }
+                            });
+
+                        }
+                    }
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                        if(!isInternetAvailable()) Toast.makeText(getApplicationContext(), "No internet connection.", Toast.LENGTH_LONG).show();
+                        if(databaseError != null) Toast.makeText(getApplicationContext(), databaseError.getMessage(), Toast.LENGTH_LONG).show();
+                    }
+                });
+
+            }
             @Override
-            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-            }
-
+            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) { }
             @Override
-            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-
-            }
-
+            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) { }
             @Override
-            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-            }
-
+            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) { }
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
                 if(databaseError!=null) Toast.makeText(getApplicationContext(), "Load Courses db error : " + databaseError.getMessage(), Toast.LENGTH_LONG).show();
