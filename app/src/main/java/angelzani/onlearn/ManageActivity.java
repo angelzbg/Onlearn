@@ -26,7 +26,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-public class ManageActivity extends AppCompatActivity {
+public class ManageActivity extends AppCompatActivity { // Марин
 
     //Firebase
     private FirebaseAuth mAuth;

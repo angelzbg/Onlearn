@@ -38,7 +38,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import angelzani.onlearn.UIClasses.CLCourse;
 
-public class AdminActivity extends AppCompatActivity {
+public class AdminActivity extends AppCompatActivity { // Ани
 
     //Display metrics
     private int width, height;

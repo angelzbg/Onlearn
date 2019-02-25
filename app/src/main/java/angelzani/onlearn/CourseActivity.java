@@ -26,7 +26,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
-public class CourseActivity extends AppCompatActivity {
+public class CourseActivity extends AppCompatActivity { // Даниел
 
 
     private FirebaseAuth mAuth;
