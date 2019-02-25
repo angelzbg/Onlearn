@@ -99,7 +99,7 @@ public class AdminActivity extends AppCompatActivity { // Ани
         findViewById(R.id.admin_LL_toProfile).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivityForResult(new Intent(AdminActivity.this, ProfileActivity.class),1);
+                startActivity(new Intent(AdminActivity.this, ProfileActivity.class));
             }
         });
 
@@ -449,20 +449,6 @@ public class AdminActivity extends AppCompatActivity { // Ани
             ((LinearLayout)findViewById(R.id.admin_LL_materials)).removeAllViews();
         }
     };
-
-    //Result logout
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-
-        if (requestCode == 1) {
-            if(resultCode == Activity.RESULT_OK){
-                finish();
-            }
-            if (resultCode == Activity.RESULT_CANCELED) {
-                //Write your code if there's no result
-            }
-        }
-    }//onActivityResult
 
     //Utility
     private boolean isInternetAvailable() {
