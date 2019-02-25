@@ -35,7 +35,7 @@ public class ManageActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private FirebaseUser user;
     private FirebaseDatabase mDatabase;
-    private DatabaseReference mRef, dbRefUsers, dbRefCourse, dbRefGroups, dbRefParticipation;
+    private DatabaseReference mRef, dbRefUsers, dbRefCourse, dbRefGroups, dbRefParticipation, dbRefMaterials;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,23 +51,9 @@ public class ManageActivity extends AppCompatActivity {
         dbRefCourse = mRef.child("course");
         dbRefGroups = mRef.child("groups");
         dbRefParticipation = mRef.child("participation");
-
-        initializeUI();
+        dbRefMaterials = mRef.child("materials");
 
     }//end onCreate()
-
-    private void initializeUI(){
-        Display display = getWindowManager().getDefaultDisplay();
-        Point size = new Point();
-        display.getSize(size);
-        width = size.x;
-        height = size.y;
-
-        int _20px = height/40;
-
-
-
-    }// end of InitializeUI()
 
     /* ----- OnClickListeners [ START ] ----- */
 
