@@ -285,7 +285,6 @@ public class ProfileActivity extends AppCompatActivity { // Ани & Ангел
                             }
                         });
                 alert.show();
-                input.requestFocus();
             }
         });
             //Address
@@ -335,7 +334,6 @@ public class ProfileActivity extends AppCompatActivity { // Ани & Ангел
                             }
                         });
                 alert.show();
-                input.requestFocus();
             }
         });
 
@@ -385,7 +383,6 @@ public class ProfileActivity extends AppCompatActivity { // Ани & Ангел
                             }
                         });
                 alert.show();
-                input.requestFocus();
             }
         });
         //Date

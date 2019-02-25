@@ -8,10 +8,12 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.Color;
 import android.graphics.Point;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.GradientDrawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintSet;
@@ -21,6 +23,8 @@ import android.util.TypedValue;
 import android.view.Display;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -384,7 +388,6 @@ public class AdminActivity extends AppCompatActivity { // Ани
                         }
                     });
             alert.show();
-            input.requestFocus();
         }
     };
 
@@ -422,7 +425,6 @@ public class AdminActivity extends AppCompatActivity { // Ани
                         }
                     });
             alert.show();
-            input.requestFocus();
         }
     };
 
