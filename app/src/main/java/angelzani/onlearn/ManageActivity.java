@@ -28,9 +28,6 @@ import com.google.firebase.database.ValueEventListener;
 
 public class ManageActivity extends AppCompatActivity {
 
-    //Display metrics
-    private int width, height;
-
     //Firebase
     private FirebaseAuth mAuth;
     private FirebaseUser user;
@@ -41,6 +38,7 @@ public class ManageActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_manage);
+
         //Firebase
         mAuth = FirebaseAuth.getInstance();
         user = mAuth.getCurrentUser();
@@ -51,14 +49,7 @@ public class ManageActivity extends AppCompatActivity {
         dbRefGroups = mRef.child("groups");
         dbRefParticipation = mRef.child("participation");
         dbRefMaterials = mRef.child("materials");
-
-    }//end onCreate()
-
-    /* ----- OnClickListeners [ START ] ----- */
-
-
-
-    /* ----- OnClickListeners [  END  ] ----- */
+    }
 
     //Utility
     private boolean isInternetAvailable() {
