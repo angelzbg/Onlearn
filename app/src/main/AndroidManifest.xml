@@ -12,7 +12,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:windowSoftInputMode="adjustResize">
-        <activity android:name=".ManageActivity"></activity>
+        <activity android:name=".SignedCourseActivity"></activity>
+        <activity android:name=".ManageActivity" />
         <activity android:name=".CourseActivity" />
         <activity android:name=".AdminActivity" />
         <activity android:name=".ClientActivity" />
