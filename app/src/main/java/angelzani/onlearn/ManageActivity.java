@@ -49,6 +49,12 @@ public class ManageActivity extends AppCompatActivity { // Марин
         dbRefGroups = mRef.child("groups");
         dbRefParticipation = mRef.child("participation");
         dbRefMaterials = mRef.child("materials");
+
+        // Взимане на подадените стойности от AdminActivity
+        Intent intent = getIntent();
+        final String courseIdExtra = intent.getStringExtra("courseId");
+        final String descriptionExtra = intent.getStringExtra("description");
+        final String lecturerIdExtra = intent.getStringExtra("lecturerId");
     }
 
     //Utility

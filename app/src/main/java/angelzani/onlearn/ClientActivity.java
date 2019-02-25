@@ -122,6 +122,8 @@ public class ClientActivity extends AppCompatActivity { // Ангел
             findViewById(R.id.client_LL_HeadMenu).setElevation(_20px/4);
         }
 
+        // ---------- Load
+
     }// end of InitializeUI()
 
     /* ----- OnClickListeners [ START ] ----- */
