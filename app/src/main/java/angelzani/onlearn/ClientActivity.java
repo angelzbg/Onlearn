@@ -69,18 +69,6 @@ public class ClientActivity extends AppCompatActivity { // Ангел
 
         initializeUI();
 
-        //za triene
-        findViewById(R.id.client_TV_Search).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(ClientActivity.this, CourseActivity.class);
-                intent.putExtra("courseId", "Mobile apps");
-                intent.putExtra("description","test");
-                intent.putExtra("lecturerId","hDBh2zyKc1WZYQBL9YQogRZEiCo1");
-                startActivity(intent);
-            }
-        });
-
     }//end onCreate()
 
     private void initializeUI(){
