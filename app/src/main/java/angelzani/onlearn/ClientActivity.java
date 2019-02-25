@@ -154,7 +154,9 @@ public class ClientActivity extends AppCompatActivity { // Ангел
                         ((TextView)findViewById(R.id.client_TV_Search)).setText(input.getText().toString().trim());
                         // Заявка
 
-
+                        for(int i=0; i<courses.size(); i++) {
+                            if()
+                        }
 
                         findViewById(R.id.client_SV_All).setVisibility(View.INVISIBLE);
                         findViewById(R.id.client_TV_ClearSearch).setVisibility(View.VISIBLE);
