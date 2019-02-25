@@ -12,6 +12,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -25,6 +26,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+
+import java.util.Date;
 
 public class CourseActivity extends AppCompatActivity { // Даниел
 
@@ -117,12 +120,68 @@ public class CourseActivity extends AppCompatActivity { // Даниел
                 groupLayout.addView(groupNameTV);
                 groupNameTV.setText(groupName);
 
+                TextView members=new TextView(getApplicationContext());
+                members.setId(View.generateViewId());
+                groupLayout.addView(members);
+                members.setText(currentNumber+"/"+max);
+
+                Date startDateTime = new Date(start);
+                Date endDateTime=new Date(end);
+
+
+                TextView startDate=new TextView(getApplicationContext());
+                startDate.setId(View.generateViewId());
+                groupLayout.addView(startDate);
+                startDate.setText(startDateTime.toString());
+
+                TextView endDate=new TextView(getApplicationContext());
+                endDate.setId(View.generateViewId());
+                groupLayout.addView(endDate);
+                endDate.setText(endDateTime.toString());
+
+
+                    Button joinBtn = new Button(getApplicationContext());
+                    joinBtn.setId(View.generateViewId());
+                    joinBtn.setText("JOIN");
+
+
+                    Button fullBtn =new Button(getApplicationContext());
+                    fullBtn.setId(View.generateViewId());
+                    fullBtn.setText("FULL");
+
+                if(currentNumber<max){
+                    groupLayout.addView(joinBtn);
+                }
+                else {
+                    groupLayout.addView(fullBtn);
+                }
+
+
 
 
                 ConstraintSet cs = new ConstraintSet();
                 cs.clone(groupLayout);
                 cs.connect(groupNameTV.getId(), ConstraintSet.TOP, ConstraintSet.PARENT_ID, ConstraintSet.TOP);
                 cs.connect(groupNameTV.getId(), ConstraintSet.START, ConstraintSet.PARENT_ID, ConstraintSet.START);
+
+                cs.connect(members.getId(), ConstraintSet.TOP, groupNameTV.getId(), ConstraintSet.BOTTOM);
+                cs.connect(members.getId(), ConstraintSet.START, groupNameTV.getId(), ConstraintSet.START);
+
+                cs.connect(startDate.getId(), ConstraintSet.TOP, members.getId(), ConstraintSet.BOTTOM);
+                cs.connect(startDate.getId(), ConstraintSet.START, members.getId(), ConstraintSet.START);
+
+                cs.connect(endDate.getId(), ConstraintSet.TOP, startDate.getId(), ConstraintSet.BOTTOM);
+                cs.connect(endDate.getId(), ConstraintSet.START, startDate.getId(), ConstraintSet.START);
+
+                if(currentNumber<max){
+                    cs.connect(joinBtn.getId(),ConstraintSet.TOP, endDate.getId(), ConstraintSet.BOTTOM);
+                    cs.connect(joinBtn.getId(), ConstraintSet.START, endDate.getId(), ConstraintSet.START);
+                }
+                else{
+                    cs.connect(fullBtn.getId(),ConstraintSet.TOP, endDate.getId(),ConstraintSet.BOTTOM);
+                    cs.connect(fullBtn.getId(),ConstraintSet.START,endDate.getId(),ConstraintSet.START);
+                }
+
 
                 cs.applyTo(groupLayout);
             }
