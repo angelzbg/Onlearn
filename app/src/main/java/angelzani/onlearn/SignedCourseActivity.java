@@ -1,6 +1,7 @@
 package angelzani.onlearn;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.support.v7.app.AppCompatActivity;
@@ -36,6 +37,12 @@ public class SignedCourseActivity extends AppCompatActivity { // Калофер
         dbRefGroups = mRef.child("groups");
         dbRefParticipation = mRef.child("participation");
         dbRefMaterials = mRef.child("materials");
+
+        // Взимане на подадените стойности от ClientActivity
+        Intent intent = getIntent();
+        final String courseIdExtra = intent.getStringExtra("courseId");
+        final String descriptionExtra = intent.getStringExtra("description");
+        final String lecturerIdExtra = intent.getStringExtra("lecturerId");
     }
 
     //Utility
