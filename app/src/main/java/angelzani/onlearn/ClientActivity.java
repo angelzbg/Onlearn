@@ -10,6 +10,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.TypedValue;
@@ -21,11 +22,17 @@ import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+
+import java.util.ArrayList;
+
+import angelzani.onlearn.UIClasses.Course;
 
 public class ClientActivity extends AppCompatActivity { // Ангел
 
@@ -41,7 +48,7 @@ public class ClientActivity extends AppCompatActivity { // Ангел
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT); // Екрана в нормално състояние без да се завърта повече
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT); // Екрана в нормално състояние без да се завърта в landscape
         setContentView(R.layout.activity_client);
 
         //Firebase
@@ -56,8 +63,8 @@ public class ClientActivity extends AppCompatActivity { // Ангел
 
         initializeUI();
 
-        /*//za triene
-        findViewById(R.id.client_CL_OngoingLayout).setOnClickListener(new View.OnClickListener() {
+        //za triene
+        findViewById(R.id.client_TV_Search).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(ClientActivity.this, CourseActivity.class);
@@ -66,7 +73,7 @@ public class ClientActivity extends AppCompatActivity { // Ангел
                 intent.putExtra("lecturerId","hDBh2zyKc1WZYQBL9YQogRZEiCo1");
                 startActivity(intent);
             }
-        });*/
+        });
 
     }//end onCreate()
 
@@ -122,9 +129,39 @@ public class ClientActivity extends AppCompatActivity { // Ангел
             findViewById(R.id.client_LL_HeadMenu).setElevation(_20px/4);
         }
 
-        // ---------- Load
+        // ---------- Load Courses
+        dbRefCourse.orderByKey().addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            }
+
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                if(databaseError!=null) Toast.makeText(getApplicationContext(), "Load Courses db error : " + databaseError.getMessage(), Toast.LENGTH_LONG).show();
+                if(!isInternetAvailable()){
+                    Toast.makeText(getApplicationContext(), "No internet connection.", Toast.LENGTH_LONG).show();
+                }
+            }
+        });
 
     }// end of InitializeUI()
+    private ArrayList<Course> courses = new ArrayList<Course>();
 
     /* ----- OnClickListeners [ START ] ----- */
 

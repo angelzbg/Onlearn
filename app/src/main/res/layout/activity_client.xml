@@ -132,16 +132,66 @@
         android:id="@+id/client_CL_AllLayout"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:visibility="invisible"
+        android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/client_CL_OngoingLayout">
 
+        <android.support.constraint.ConstraintLayout
+            android:id="@+id/client_CL_SearchWrap"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:paddingStart="50px"
+            android:paddingTop="20px"
+            android:paddingEnd="50px"
+            android:paddingBottom="20px"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:id="@+id/client_TV_Search"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:background="@color/white"
+                android:gravity="center"
+                android:hint="Search \uD83D\uDD0D"
+                android:paddingTop="10px"
+                android:paddingBottom="10px"
+                android:textSize="20px"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+        </android.support.constraint.ConstraintLayout>
+
+        <ScrollView
+            android:id="@+id/client_SV_SearchResult"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/client_CL_SearchWrap">
+
+            <LinearLayout
+                android:id="@+id/client_LL_SearchResult"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" />
+        </ScrollView>
+
         <ScrollView
             android:id="@+id/client_SV_All"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="0dp"
+            android:visibility="visible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/client_CL_SearchWrap">
 
             <LinearLayout
                 android:id="@+id/client_LL_All"
@@ -163,8 +213,12 @@
 
         <ScrollView
             android:id="@+id/client_SV_Ended"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
             <LinearLayout
                 android:id="@+id/client_LL_Ended"
