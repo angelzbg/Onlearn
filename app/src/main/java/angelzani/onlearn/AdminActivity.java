@@ -384,6 +384,7 @@ public class AdminActivity extends AppCompatActivity { // Ани
                         }
                     });
             alert.show();
+            input.requestFocus();
         }
     };
 
@@ -421,6 +422,7 @@ public class AdminActivity extends AppCompatActivity { // Ани
                         }
                     });
             alert.show();
+            input.requestFocus();
         }
     };
 
