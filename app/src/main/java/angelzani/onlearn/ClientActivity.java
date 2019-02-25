@@ -56,7 +56,7 @@ public class ClientActivity extends AppCompatActivity { // Ангел
 
         initializeUI();
 
-        //za triene
+        /*//za triene
         findViewById(R.id.client_CL_OngoingLayout).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -66,7 +66,7 @@ public class ClientActivity extends AppCompatActivity { // Ангел
                 intent.putExtra("lecturerId","hDBh2zyKc1WZYQBL9YQogRZEiCo1");
                 startActivity(intent);
             }
-        });
+        });*/
 
     }//end onCreate()
 
