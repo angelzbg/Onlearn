@@ -32,7 +32,7 @@ public class CourseActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private FirebaseUser user;
     private FirebaseDatabase mDatabase;
-    private DatabaseReference mRef, dbRefUsers, dbRefCourse, dbRefGroups, dbRefParticipation, dbRefMaterials;
+    private DatabaseReference mRef, dbRefUsers, dbRefCourse, dbRefGroups, dbRefParticipation;
 
     private TextView courseName;
     private TextView desc;
@@ -53,7 +53,6 @@ public class CourseActivity extends AppCompatActivity {
         dbRefCourse=mRef.child("course");
         dbRefGroups=mRef.child("groups");
         dbRefParticipation=mRef.child("participation");
-        dbRefMaterials= mRef.child("materials");
 
         courseName=findViewById(R.id.course_TV_courseName);
         desc=findViewById(R.id.course_TV_desc);
