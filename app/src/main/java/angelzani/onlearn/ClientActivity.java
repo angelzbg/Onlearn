@@ -13,12 +13,15 @@ import android.net.NetworkInfo;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.constraint.ConstraintLayout;
+import android.support.constraint.ConstraintSet;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.TypedValue;
 import android.view.Display;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -34,6 +37,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
+import angelzani.onlearn.UIClasses.CLCourse;
 import angelzani.onlearn.UIClasses.Course;
 
 public class ClientActivity extends AppCompatActivity { // Ангел
@@ -86,7 +90,7 @@ public class ClientActivity extends AppCompatActivity { // Ангел
         width = size.x;
         height = size.y;
 
-        int _20px = height/40;
+        final int _20px = height/40;
 
         /* ----- Header Layout ----- */
         findViewById(R.id.client_CL_Head).getLayoutParams().height = height/16;
@@ -132,12 +136,13 @@ public class ClientActivity extends AppCompatActivity { // Ангел
         ((TextView)findViewById(R.id.client_TV_Search)).setTextSize(TypedValue.COMPLEX_UNIT_PX, _20px);
         GradientDrawable gradientDrawableBackgroundSearch = new GradientDrawable();
         gradientDrawableBackgroundSearch.setColor(Color.parseColor("#ffffff"));
-        gradientDrawableBackgroundSearch.setStroke(1, Color.parseColor("#FDFDFD"));
+        gradientDrawableBackgroundSearch.setStroke(1, Color.parseColor("#f7f7f7"));
         gradientDrawableBackgroundSearch.setShape(GradientDrawable.RECTANGLE);
-        gradientDrawableBackgroundSearch.setCornerRadius(_20px/2);
+        gradientDrawableBackgroundSearch.setCornerRadius(_20px);
         findViewById(R.id.client_TV_Search).setBackground(gradientDrawableBackgroundSearch);
         findViewById(R.id.client_TV_ClearSearch).getLayoutParams().width = height/27;
         findViewById(R.id.client_TV_ClearSearch).getLayoutParams().height = height/27;
+        ((TextView)findViewById(R.id.client_TV_ClearSearch)).setTextSize(TypedValue.COMPLEX_UNIT_PX, _20px/2);
         findViewById(R.id.client_TV_ClearSearch).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -145,19 +150,87 @@ public class ClientActivity extends AppCompatActivity { // Ангел
             }
         });
 
-        /* ----- Padding на лейаутите*/
-
         // ---------- Elevations
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
             findViewById(R.id.client_LL_HeadMenu).setElevation(_20px/4);
-            findViewById(R.id.client_TV_Search).setElevation(_20px/8);
-            findViewById(R.id.client_TV_ClearSearch).setElevation(_20px/6);
+            findViewById(R.id.client_TV_ClearSearch).setElevation(_20px/8);
         }
 
         // ---------- Load Courses
+        final GradientDrawable gradientDrawableBackgroundCourses = new GradientDrawable();
+        gradientDrawableBackgroundCourses.setColor(Color.parseColor("#ffffff"));
+        //gradientDrawableBackgroundCourses.setStroke(1, Color.parseColor("#000000"));
+        gradientDrawableBackgroundCourses.setShape(GradientDrawable.RECTANGLE);
+        gradientDrawableBackgroundCourses.setCornerRadius(_20px/2);
+
         dbRefCourse.orderByKey().addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                final Course courseInfo = new Course(dataSnapshot.getKey(), dataSnapshot.child("descr").getValue(String.class), dataSnapshot.child("lect").getValue(String.class));
+                courses.add(courseInfo);
+
+                ConstraintLayout courseLayout = new ConstraintLayout(getApplicationContext());
+                courseLayout.setId(View.generateViewId());
+
+                courseLayout.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+
+                ((LinearLayout)findViewById(R.id.client_LL_All)).addView(courseLayout);
+
+                courseLayout.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        //Теглене и проверка дали потребителя е в този курс: ако не е -> CourseActivity , ако е -> SignedCourseActivity
+                        dbRefParticipation.child(courseInfo.name_Id).child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                if(!dataSnapshot.exists()) { // не е записан
+                                    Intent intent = new Intent(ClientActivity.this, CourseActivity.class);
+                                    intent.putExtra("courseId", courseInfo.name_Id);
+                                    intent.putExtra("description",courseInfo.description);
+                                    intent.putExtra("lecturerId",courseInfo.lecturerId);
+                                    startActivity(intent);
+                                } else { // вече е записан в тази дисциплина
+                                    Intent intent = new Intent(ClientActivity.this, SignedCourseActivity.class);
+                                    intent.putExtra("courseId", courseInfo.name_Id);
+                                    intent.putExtra("description",courseInfo.description);
+                                    intent.putExtra("lecturerId",courseInfo.lecturerId);
+                                    intent.putExtra("groupId", dataSnapshot.getValue(String.class));
+                                    startActivity(intent);
+                                }
+                            }
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+                                if(!isInternetAvailable()) Toast.makeText(getApplicationContext(), "No internet connection.", Toast.LENGTH_LONG).show();
+                                if(databaseError != null) Toast.makeText(getApplicationContext(), "pri proverka za grupata: " + databaseError.getMessage(), Toast.LENGTH_LONG).show();
+                            }
+                        });
+                    }
+                });
+
+                setMargins(courseLayout, _20px,_20px,_20px,_20px/8);
+                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
+                    courseLayout.setElevation(_20px/8);
+                } else {
+                    gradientDrawableBackgroundCourses.setStroke(1, Color.parseColor("#000000"));
+                }
+                courseLayout.setBackground(gradientDrawableBackgroundCourses);
+
+                TextView titleView = new TextView(getApplicationContext());
+                titleView.setId(View.generateViewId());
+                courseLayout.addView(titleView);
+
+                ConstraintSet cs = new ConstraintSet();
+                cs.clone(courseLayout);
+                // KOE VIEW , КОЯ СТРАНА, ЗА КОЕ VIEW, ЗА КОЕ СТРАНА, КОЛКО ОТСТОЯНИЕ
+                cs.connect(titleView.getId(), ConstraintSet.START, ConstraintSet.PARENT_ID, ConstraintSet.START, _20px);
+                cs.connect(titleView.getId(), ConstraintSet.TOP, ConstraintSet.PARENT_ID, ConstraintSet.TOP, _20px);
+                cs.connect(titleView.getId(), ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END,_20px);
+                cs.applyTo(courseLayout);
+
+                titleView.setText(courseInfo.name_Id);
+                titleView.setTextSize(TypedValue.COMPLEX_UNIT_PX, _20px);
+                titleView.setTextColor(getResources().getColor(R.color.light_blue3));
+                titleView.setMaxLines(2);
 
             }
 

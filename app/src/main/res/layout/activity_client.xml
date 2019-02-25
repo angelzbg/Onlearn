@@ -156,7 +156,7 @@
                 android:background="@color/white"
                 android:fontFamily="@font/roboto_light"
                 android:gravity="center"
-                android:hint="Search \uD83D\uDD0D"
+                android:hint="Search \u2315"
                 android:maxLines="1"
                 android:paddingTop="10px"
                 android:paddingEnd="40px"
@@ -178,7 +178,8 @@
                 android:gravity="center"
                 android:text="✕"
                 android:textColor="@color/black"
-                android:visibility="invisible"
+                android:textSize="10px"
+                android:visibility="visible"
                 app:layout_constraintBottom_toBottomOf="@+id/client_TV_Search"
                 app:layout_constraintEnd_toEndOf="@+id/client_TV_Search"
                 app:layout_constraintTop_toTopOf="@+id/client_TV_Search" />

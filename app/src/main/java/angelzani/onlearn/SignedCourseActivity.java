@@ -43,6 +43,7 @@ public class SignedCourseActivity extends AppCompatActivity { // Калофер
         final String courseIdExtra = intent.getStringExtra("courseId");
         final String descriptionExtra = intent.getStringExtra("description");
         final String lecturerIdExtra = intent.getStringExtra("lecturerId");
+        final String groupIdExtra = intent.getStringExtra("groupId");
     }
 
     //Utility
