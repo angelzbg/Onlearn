@@ -40,6 +40,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.regex.Pattern;
+
 import angelzani.onlearn.UIClasses.CLCourse;
 
 public class AdminActivity extends AppCompatActivity { // Ани
@@ -296,6 +298,10 @@ public class AdminActivity extends AppCompatActivity { // Ани
 
                 if(title.length() == 0){
                     Toast.makeText(getApplicationContext(), "Course name can not be empty.", Toast.LENGTH_LONG).show();
+                    return;
+                }
+                if(title.matches(".*[.#$\\[\\]].*")){
+                    Toast.makeText(getApplicationContext(), "Course name can not contain symbols: '.', '#', '$', '[', ']'", Toast.LENGTH_LONG).show();
                     return;
                 }
                 if(description.length() == 0){
