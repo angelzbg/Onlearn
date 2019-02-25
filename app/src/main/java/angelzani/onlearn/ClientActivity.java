@@ -119,7 +119,7 @@ public class ClientActivity extends AppCompatActivity { // Ангел
         findViewById(R.id.client_TV_HM_Ended).setOnClickListener(switchMenu);
 
         /* ----- Search Box ----- */
-        findViewById(R.id.client_CL_SearchWrap).setPadding(_20px*2,_20px,_20px*2,0);
+        findViewById(R.id.client_CL_SearchWrap).setPadding(_20px,_20px,_20px,0);
         findViewById(R.id.client_TV_Search).setPadding(0,_20px/2,_20px*2,_20px/2);
         ((TextView)findViewById(R.id.client_TV_Search)).setTextSize(TypedValue.COMPLEX_UNIT_PX, _20px);
         GradientDrawable gradientDrawableBackgroundSearch = new GradientDrawable();
@@ -197,7 +197,7 @@ public class ClientActivity extends AppCompatActivity { // Ангел
 
                 setMargins(courseLayout, _20px,_20px,_20px,_20px/8);
                 if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
-                    courseLayout.setElevation(_20px/8);
+                    courseLayout.setElevation(_20px/10);
                 } else {
                     gradientDrawableBackgroundCourses.setStroke(1, Color.parseColor("#000000"));
                 }

@@ -172,7 +172,7 @@ public class AdminActivity extends AppCompatActivity { // Ани
 
                 setMargins(courseLayout, _20px,_20px,_20px,_20px/8);
                 if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
-                    courseLayout.setElevation(_20px/8);
+                    courseLayout.setElevation(_20px/10);
                 } else {
                     gradientDrawableBackgroundCourses.setStroke(1, Color.parseColor("#000000"));
                 }

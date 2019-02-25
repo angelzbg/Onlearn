@@ -142,9 +142,9 @@
             android:id="@+id/client_CL_SearchWrap"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:paddingStart="40px"
+            android:paddingStart="20px"
             android:paddingTop="20px"
-            android:paddingEnd="40px"
+            android:paddingEnd="20px"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
