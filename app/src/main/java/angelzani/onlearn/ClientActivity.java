@@ -4,8 +4,10 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
@@ -124,9 +126,32 @@ public class ClientActivity extends AppCompatActivity { // Ангел
         findViewById(R.id.client_TV_HM_Ongoing).setOnClickListener(switchMenu);
         findViewById(R.id.client_TV_HM_Ended).setOnClickListener(switchMenu);
 
+        /* ----- Search Box ----- */
+        findViewById(R.id.client_CL_SearchWrap).setPadding(_20px*2,_20px,_20px*2,0);
+        findViewById(R.id.client_TV_Search).setPadding(0,_20px/2,_20px*2,_20px/2);
+        ((TextView)findViewById(R.id.client_TV_Search)).setTextSize(TypedValue.COMPLEX_UNIT_PX, _20px);
+        GradientDrawable gradientDrawableBackgroundSearch = new GradientDrawable();
+        gradientDrawableBackgroundSearch.setColor(Color.parseColor("#ffffff"));
+        gradientDrawableBackgroundSearch.setStroke(1, Color.parseColor("#FDFDFD"));
+        gradientDrawableBackgroundSearch.setShape(GradientDrawable.RECTANGLE);
+        gradientDrawableBackgroundSearch.setCornerRadius(_20px/2);
+        findViewById(R.id.client_TV_Search).setBackground(gradientDrawableBackgroundSearch);
+        findViewById(R.id.client_TV_ClearSearch).getLayoutParams().width = height/27;
+        findViewById(R.id.client_TV_ClearSearch).getLayoutParams().height = height/27;
+        findViewById(R.id.client_TV_ClearSearch).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // CLEAR SEARCH LOGIC
+            }
+        });
+
+        /* ----- Padding на лейаутите*/
+
         // ---------- Elevations
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
             findViewById(R.id.client_LL_HeadMenu).setElevation(_20px/4);
+            findViewById(R.id.client_TV_Search).setElevation(_20px/8);
+            findViewById(R.id.client_TV_ClearSearch).setElevation(_20px/6);
         }
 
         // ---------- Load Courses
