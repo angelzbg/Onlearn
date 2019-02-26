@@ -53,37 +53,30 @@
             android:id="@+id/course_TV_desc"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="TextView" />
+            android:text="Course name" />
 
-        <LinearLayout
-            android:id="@+id/course_LL_lecture"
-            android:layout_width="match_parent"
+        <TextView
+            android:id="@+id/course_TV_lectureName"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:weightSum="2">
+            android:layout_weight="1"
+            android:text="Lecturer name"
+            tools:layout_editor_absoluteX="32dp"
+            tools:layout_editor_absoluteY="363dp" />
 
-            <TextView
-                android:id="@+id/course_TV_lectureName"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Lecture:"
-                tools:layout_editor_absoluteX="32dp"
-                tools:layout_editor_absoluteY="363dp" />
+        <TextView
+            android:id="@+id/course_TV_lectureEmail"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Lecturer email" />
 
-            <TextView
-                android:id="@+id/course_TV_lectureEmail"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Email" />
-        </LinearLayout>
     </LinearLayout>
 
     <ScrollView
         android:id="@+id/course_SV_groups"
-        android:layout_width="368dp"
-        android:layout_height="464dp"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
