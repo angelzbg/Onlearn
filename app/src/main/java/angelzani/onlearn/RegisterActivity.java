@@ -89,13 +89,14 @@ public class RegisterActivity extends AppCompatActivity { // Ани
         ((Button)findViewById(R.id.register_B_signup)).setTextSize(TypedValue.COMPLEX_UNIT_PX, height/44);
 
         ((EditText)findViewById(R.id.register_ET_email)).setTextSize(TypedValue.COMPLEX_UNIT_PX, _20px);
-        ((EditText)findViewById(R.id.register_ET_password)).setTextSize(TypedValue.COMPLEX_UNIT_PX, _20px); setMargins(findViewById(R.id.register_TI_Password), 0,_20px,0,0);
-        ((EditText)findViewById(R.id.register_ET_name)).setTextSize(TypedValue.COMPLEX_UNIT_PX, _20px); setMargins(findViewById(R.id.register_ET_name), 0,_20px,0,0);
-        ((EditText)findViewById(R.id.register_ET_address)).setTextSize(TypedValue.COMPLEX_UNIT_PX, _20px); setMargins(findViewById(R.id.register_ET_address), 0,_20px,0,0);
-        ((EditText)findViewById(R.id.register_ET_phone)).setTextSize(TypedValue.COMPLEX_UNIT_PX, _20px); setMargins(findViewById(R.id.register_ET_phone), 0,_20px,0,0);
+        ((EditText)findViewById(R.id.register_ET_password)).setTextSize(TypedValue.COMPLEX_UNIT_PX, _20px); setMargins(findViewById(R.id.register_TI_password), 0,_20px,0,0);
+        ((EditText)findViewById(R.id.register_ET_name)).setTextSize(TypedValue.COMPLEX_UNIT_PX, _20px); setMargins(findViewById(R.id.register_TI_name), 0,_20px,0,0);
+        ((EditText)findViewById(R.id.register_ET_address)).setTextSize(TypedValue.COMPLEX_UNIT_PX, _20px); setMargins(findViewById(R.id.register_TI_address), 0,_20px,0,0);
+        ((EditText)findViewById(R.id.register_ET_phone)).setTextSize(TypedValue.COMPLEX_UNIT_PX, _20px); setMargins(findViewById(R.id.register_TI_phone), 0,_20px,0,0);
         ((TextView)findViewById(R.id.register_TV_dob)).setTextSize(TypedValue.COMPLEX_UNIT_PX, _20px); setMargins(findViewById(R.id.register_TV_dob), 0,_20px,0,0);
 
         findViewById(R.id.register_LL_regBox).setPadding(height/20,height/20,height/20,height/20);
+        setMargins(findViewById(R.id.register_LL_regBox), _20px*3,0,_20px*3,0);
 
         GradientDrawable gradientDrawable = new GradientDrawable();
         gradientDrawable.setColor(Color.parseColor("#E5EEFC"));

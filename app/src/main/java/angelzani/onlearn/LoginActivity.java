@@ -127,6 +127,7 @@ public class LoginActivity extends AppCompatActivity { // Ангел
         ((TextView) findViewById(R.id.login_TV_Register)).setTextSize(TypedValue.COMPLEX_UNIT_PX, _18px);
         findViewById(R.id.login_CL_RegisterBox).setPadding(_20px*2,_20px*2,_20px*2,_20px*2);
 
+        setMargins(findViewById(R.id.login_CL_RegisterWrap), _20px*3,0,_20px*3,0);
         GradientDrawable gradientDrawable = new GradientDrawable();
         gradientDrawable.setColor(Color.parseColor("#E5EEFC"));
         gradientDrawable.setShape(GradientDrawable.RECTANGLE);
@@ -152,7 +153,7 @@ public class LoginActivity extends AppCompatActivity { // Ангел
 
         ConstraintSet cs = new ConstraintSet();
         cs.clone((ConstraintLayout)findViewById(R.id.login_CL_RegisterBox));
-        cs.connect(R.id.login_TI_Password, ConstraintSet.TOP, R.id.login_ET_Email, ConstraintSet.BOTTOM, _20px*2);
+        cs.connect(R.id.login_TI_Password, ConstraintSet.TOP, R.id.login_TI_Email, ConstraintSet.BOTTOM, _20px*2);
         cs.connect(R.id.login_TV_Register, ConstraintSet.TOP, R.id.login_TI_Password, ConstraintSet.BOTTOM, _20px*2);
         cs.applyTo((ConstraintLayout)findViewById(R.id.login_CL_RegisterBox));
 

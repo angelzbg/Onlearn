@@ -10,8 +10,10 @@
 
     <android.support.constraint.ConstraintLayout
         android:id="@+id/login_CL_RegisterWrap"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginStart="60px"
+        android:layout_marginEnd="60px"
         android:background="@color/light_blue1"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -20,7 +22,7 @@
 
         <android.support.constraint.ConstraintLayout
             android:id="@+id/login_CL_RegisterBox"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:padding="20px"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -28,34 +30,40 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/login_TI_Email"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
             <EditText
                 android:id="@+id/login_ET_Email"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ems="10"
                 android:fontFamily="@font/roboto_regular"
                 android:hint="Email"
                 android:inputType="textEmailAddress"
                 android:textColor="@color/black"
-                android:textSize="20px"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                android:textSize="20px" />
+            </android.support.design.widget.TextInputLayout>
 
             <android.support.design.widget.TextInputLayout
                 android:id="@+id/login_TI_Password"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="20px"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/login_ET_Email"
+                app:layout_constraintTop_toBottomOf="@+id/login_TI_Email"
                 app:passwordToggleEnabled="true">
 
                 <EditText
                     android:id="@+id/login_ET_Password"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="20px"
                     android:ems="10"
                     android:fontFamily="@font/roboto_regular"
                     android:hint="Password"
