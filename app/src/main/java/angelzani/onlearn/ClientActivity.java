@@ -17,15 +17,20 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.constraint.ConstraintSet;
+import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.TypedValue;
 import android.view.Display;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewManager;
+import android.view.ViewTreeObserver;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
+import android.widget.Scroller;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -42,6 +47,7 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 
 import angelzani.onlearn.UIClasses.CLCourse;
+import angelzani.onlearn.UIClasses.OnSwipeTouchListener;
 
 public class ClientActivity extends AppCompatActivity { // Ангел
 
@@ -413,6 +419,92 @@ public class ClientActivity extends AppCompatActivity { // Ангел
             }
         });
 
+        // -------------------- Swipe Logic
+        // ----- ALL/COURSES
+        findViewById(R.id.client_SV_All).setOnTouchListener(new OnSwipeTouchListener(ClientActivity.this) { // в courses/all
+            @Override
+            public void onSwipeLeft() {
+                super.onSwipeLeft();
+                // отиваме в ongoing
+                findViewById(R.id.client_TV_HM_Ongoing).callOnClick();
+            }
+            @Override
+            public void onSwipeRight() {
+                super.onSwipeRight();
+                // отиваме Никъде
+            }
+        });
+        findViewById(R.id.client_SV_SearchResult).setOnTouchListener(new OnSwipeTouchListener(ClientActivity.this) { // в courses/all
+            @Override
+            public void onSwipeLeft() {
+                super.onSwipeLeft();
+                // отиваме в ongoing
+                findViewById(R.id.client_TV_HM_Ongoing).callOnClick();
+            }
+        });
+        findViewById(R.id.client_LL_All).setOnTouchListener(new OnSwipeTouchListener(ClientActivity.this) { // в courses/all
+            @Override
+            public void onSwipeLeft() {
+                super.onSwipeLeft();
+                // отиваме в ongoing
+                findViewById(R.id.client_TV_HM_Ongoing).callOnClick();
+            }
+        });
+        findViewById(R.id.client_LL_SearchResult).setOnTouchListener(new OnSwipeTouchListener(ClientActivity.this) { // в courses/all
+            @Override
+            public void onSwipeLeft() {
+                super.onSwipeLeft();
+                // отиваме в ongoing
+                findViewById(R.id.client_TV_HM_Ongoing).callOnClick();
+            }
+        });
+        // ----- ONGOING
+        findViewById(R.id.client_SV_Ongoing).setOnTouchListener(new OnSwipeTouchListener(ClientActivity.this) { // в ongoing
+            @Override
+            public void onSwipeLeft() {
+                super.onSwipeLeft();
+                // отиваме в ended
+                findViewById(R.id.client_TV_HM_Ended).callOnClick();
+            }
+            @Override
+            public void onSwipeRight() {
+                super.onSwipeRight();
+                // отиваме в courses/all
+                findViewById(R.id.client_TV_HM_All).callOnClick();
+            }
+        });
+        findViewById(R.id.client_LL_Ongoing).setOnTouchListener(new OnSwipeTouchListener(ClientActivity.this) { // в ongoing
+            @Override
+            public void onSwipeLeft() {
+                super.onSwipeLeft();
+                // отиваме в ended
+                findViewById(R.id.client_TV_HM_Ended).callOnClick();
+            }
+            @Override
+            public void onSwipeRight() {
+                super.onSwipeRight();
+                // отиваме в courses/all
+                findViewById(R.id.client_TV_HM_All).callOnClick();
+            }
+        });
+        // ----- ENDED
+        findViewById(R.id.client_SV_Ended).setOnTouchListener(new OnSwipeTouchListener(ClientActivity.this) { // в ended
+            @Override
+            public void onSwipeRight() {
+                super.onSwipeRight();
+                // отиваме в ongoing
+                findViewById(R.id.client_TV_HM_Ongoing).callOnClick();
+            }
+        });
+        findViewById(R.id.client_LL_Ended).setOnTouchListener(new OnSwipeTouchListener(ClientActivity.this) { // в ended
+            @Override
+            public void onSwipeRight() {
+                super.onSwipeRight();
+                // отиваме в ongoing
+                findViewById(R.id.client_TV_HM_Ongoing).callOnClick();
+            }
+        });
+
     }// end of InitializeUI()
     private ArrayList<CLCourse> courses = new ArrayList<CLCourse>();
 
@@ -449,17 +541,6 @@ public class ClientActivity extends AppCompatActivity { // Ангел
     };
 
     /* ----- OnClickListeners [  END  ] ----- */
-
-    // ----- Scroll Logic
-    private void hideHeader() {
-        findViewById(R.id.client_CL_Head).setX(0);
-        findViewById(R.id.client_CL_Head).setY(-(height/16));
-    }
-    private void showHeader() {
-        findViewById(R.id.client_CL_Head).setX(0);
-        findViewById(R.id.client_CL_Head).setY(height/16);
-    }
-
 
     //Utility
     private boolean isInternetAvailable() {
