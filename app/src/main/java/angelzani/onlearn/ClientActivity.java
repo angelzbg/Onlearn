@@ -157,9 +157,12 @@ public class ClientActivity extends AppCompatActivity { // Ангел
                         findViewById(R.id.client_SV_SearchResult).setVisibility(View.VISIBLE);
 
                         ((TextView)findViewById(R.id.client_TV_Search)).setText(searchString);
+                        final LinearLayout client_LL_SearchResult = findViewById(R.id.client_LL_SearchResult);
+                        client_LL_SearchResult.removeAllViews();
 
-                        for(int i=0; i<courses.size(); i++) {
-                            if(courses.get(i).getCourseId().contains(searchString)) {
+                        final int currentCoursesSize = courses.size(); // понеже следим за нови дисцплини от датабазата и може да се получат разни...
+                        for(int i=0; i<currentCoursesSize; i++) {
+                            if(courses.get(i).getCourseId().toLowerCase().contains(searchString.toLowerCase())) {
                                 final GradientDrawable gradientDrawableBackgroundCourses = new GradientDrawable();
                                 gradientDrawableBackgroundCourses.setColor(Color.parseColor("#ffffff"));
                                 //gradientDrawableBackgroundCourses.setStroke(1, Color.parseColor("#000000"));
@@ -171,8 +174,7 @@ public class ClientActivity extends AppCompatActivity { // Ангел
 
                                 courseLayout.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
 
-                                courses.add(courseLayout);
-                                ((LinearLayout) findViewById(R.id.client_LL_SearchResult)).addView(courseLayout);
+                                client_LL_SearchResult.addView(courseLayout);
 
                                 courseLayout.setOnClickListener(new View.OnClickListener() {
                                     @Override
@@ -447,6 +449,17 @@ public class ClientActivity extends AppCompatActivity { // Ангел
     };
 
     /* ----- OnClickListeners [  END  ] ----- */
+
+    // ----- Scroll Logic
+    private void hideHeader() {
+        findViewById(R.id.client_CL_Head).setX(0);
+        findViewById(R.id.client_CL_Head).setY(-(height/16));
+    }
+    private void showHeader() {
+        findViewById(R.id.client_CL_Head).setX(0);
+        findViewById(R.id.client_CL_Head).setY(height/16);
+    }
+
 
     //Utility
     private boolean isInternetAvailable() {
