@@ -1,5 +1,7 @@
 package angelzani.onlearn;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
@@ -68,6 +70,28 @@ public class LoginActivity extends AppCompatActivity { // Ангел
         mDatabase = FirebaseDatabase.getInstance();
         mRef = mDatabase.getReference(); //root
 
+        initializeUI();
+
+        final Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                ConnectivityManager cm = (ConnectivityManager)LoginActivity.this.getSystemService(Context.CONNECTIVITY_SERVICE);
+                NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+                boolean isConnected = activeNetwork != null && activeNetwork.isConnectedOrConnecting();
+                if(!isConnected) {
+                    findViewById(R.id.login_TV_AlertClose).setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            finishAffinity();
+                            System.exit(0);
+                        }
+                    });
+                    showAlert("Ooops", "Please enable your internet connection and start the application again.");
+                }
+            }
+        }, 250); // понеже showAlert прави снимка на лейаута и го блърва за ефекта при изскачащия прозорец за грешки, трябва малко да се забави тази проверка иначе -> NullPointerException
+
         FirebaseUser user = mAuth.getCurrentUser();
         if(user!=null){ // логнати сме
             //теглим атрибут role и роверяваме дали е client или admin -> ClientActivity || AdminActivity
@@ -86,8 +110,6 @@ public class LoginActivity extends AppCompatActivity { // Ангел
                 }
             });
         }
-
-        initializeUI();
 
     }//end onCreate()
 

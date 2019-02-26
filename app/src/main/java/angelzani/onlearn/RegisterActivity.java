@@ -328,12 +328,12 @@ public class RegisterActivity extends AppCompatActivity { // Ани
 
             if(!((TextView)findViewById(R.id.register_TV_dob)).getText().toString().trim().isEmpty()) dob=((TextView)findViewById(R.id.register_TV_dob)).getText().toString();
 
-            if(address.length() < 6) {
+            if(address != null && address.length() < 6) {
                 showAlert("Alert", "Address must contain at least 6 characters.");
                 return;
             }
 
-            if(phone.length() > 50) {
+            if(phone != null && phone.length() > 50) {
                 showAlert("Alert", "Къв е тоя телефон ве брат?");
                 return;
             }
