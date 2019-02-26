@@ -179,7 +179,7 @@
                 android:text="✕"
                 android:textColor="@color/black"
                 android:textSize="10px"
-                android:visibility="visible"
+                android:visibility="invisible"
                 app:layout_constraintBottom_toBottomOf="@+id/client_TV_Search"
                 app:layout_constraintEnd_toEndOf="@+id/client_TV_Search"
                 app:layout_constraintTop_toTopOf="@+id/client_TV_Search" />

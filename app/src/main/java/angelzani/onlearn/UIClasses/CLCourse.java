@@ -5,7 +5,7 @@ import android.support.constraint.ConstraintLayout;
 
 public class CLCourse extends ConstraintLayout {
 
-    private String courseId, description, lecturerId;
+    public String courseId, description, lecturerId;
 
     public CLCourse(Context context, String courseId, String description, String lecturerId) {
         super(context);
