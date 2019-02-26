@@ -127,13 +127,19 @@ public class ClientActivity extends AppCompatActivity { // Ангел
         findViewById(R.id.client_TV_HM_Ongoing).setOnClickListener(switchMenu);
         findViewById(R.id.client_TV_HM_Ended).setOnClickListener(switchMenu);
 
+        // SV Layouts margings:
+        setMargins(findViewById(R.id.client_SV_All), _20px,0,_20px,0);
+        setMargins(findViewById(R.id.client_SV_SearchResult), _20px,0,_20px,0);
+        setMargins(findViewById(R.id.client_SV_Ongoing), _20px,0,_20px,0);
+        setMargins(findViewById(R.id.client_SV_Ended), _20px,0,_20px,0);
+
         /* ----- Search Box ----- */
-        findViewById(R.id.client_CL_SearchWrap).setPadding(_20px,_20px,_20px,0);
-        findViewById(R.id.client_TV_Search).setPadding(0,_20px/2,_20px*2,_20px/2);
+        setMargins(findViewById(R.id.client_CL_SearchWrap), _20px,_20px/4,_20px,0);
+        findViewById(R.id.client_TV_Search).setPadding(_20px,_20px/2,_20px*2,_20px/2);
         ((TextView)findViewById(R.id.client_TV_Search)).setTextSize(TypedValue.COMPLEX_UNIT_PX, _20px);
         GradientDrawable gradientDrawableBackgroundSearch = new GradientDrawable();
         gradientDrawableBackgroundSearch.setColor(Color.parseColor("#ffffff"));
-        gradientDrawableBackgroundSearch.setStroke(1, Color.parseColor("#3f3f3f"));
+        gradientDrawableBackgroundSearch.setStroke(_20px/20, Color.parseColor("#e2e2e2"));
         gradientDrawableBackgroundSearch.setShape(GradientDrawable.RECTANGLE);
         gradientDrawableBackgroundSearch.setCornerRadius(_20px);
         findViewById(R.id.client_TV_Search).setBackground(gradientDrawableBackgroundSearch);
