@@ -6,13 +6,20 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Point;
+import android.graphics.drawable.AnimationDrawable;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
+import android.renderscript.Allocation;
+import android.renderscript.Element;
+import android.renderscript.RenderScript;
+import android.renderscript.ScriptIntrinsicBlur;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
@@ -27,6 +34,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewManager;
 import android.view.ViewTreeObserver;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
@@ -89,6 +98,35 @@ public class ClientActivity extends AppCompatActivity { // Ангел
 
         final int _20px = height/40;
 
+        // Loading Progress Anim
+        findViewById(R.id.client_IV_LoadingBar).getLayoutParams().width = width/4;
+        findViewById(R.id.client_IV_LoadingBar).getLayoutParams().height = findViewById(R.id.client_IV_LoadingBar).getLayoutParams().width;
+
+        // Alert Message
+        findViewById(R.id.client_CL_Alert).setPadding(height/80,height/80,height/80,height/80);
+
+        GradientDrawable gradientDrawable = new GradientDrawable();
+        gradientDrawable.setColor(Color.parseColor("#E9FFFFFF"));
+        gradientDrawable.setShape(GradientDrawable.RECTANGLE);
+        gradientDrawable.setCornerRadius(_20px/2);
+        findViewById(R.id.client_CL_AlertBox).setBackground(gradientDrawable);
+
+        ((TextView)findViewById(R.id.client_TV_AlertTitle)).setTextSize(TypedValue.COMPLEX_UNIT_PX, height/33);
+        findViewById(R.id.client_TV_AlertTitle).setPadding(0,height/80,0,height/80);
+
+        ((TextView)findViewById(R.id.client_TV_AlertMessage)).setTextSize(TypedValue.COMPLEX_UNIT_PX, _20px);
+        findViewById(R.id.client_TV_AlertMessage).setPadding(_20px,_20px,_20px,_20px);
+
+        ((TextView)findViewById(R.id.client_TV_AlertClose)).setTextSize(TypedValue.COMPLEX_UNIT_PX, _20px);
+        findViewById(R.id.client_TV_AlertClose).getLayoutParams().width = height/16;
+        findViewById(R.id.client_TV_AlertClose).getLayoutParams().height = findViewById(R.id.client_TV_AlertClose).getLayoutParams().width;
+        setMargins(findViewById(R.id.client_TV_AlertClose), 0,0,0,height/80);
+        gradientDrawable = new GradientDrawable();
+        gradientDrawable.setColor(Color.parseColor("#E5EEFC"));
+        gradientDrawable.setShape(GradientDrawable.OVAL);
+        gradientDrawable.setStroke(1, Color.parseColor("#82B1FF"));
+        findViewById(R.id.client_TV_AlertClose).setBackground(gradientDrawable);
+
         /* ----- Header Layout ----- */
         findViewById(R.id.client_CL_Head).getLayoutParams().height = height/16;
         //Profile Icon
@@ -112,8 +150,9 @@ public class ClientActivity extends AppCompatActivity { // Ангел
             }
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
+                if(databaseError != null) showAlert("Error", databaseError.getMessage());
                 if(!isInternetAvailable()){
-                    Toast.makeText(getApplicationContext(), "No internet connection.", Toast.LENGTH_LONG).show();
+                    //Toast.makeText(getApplicationContext(), "No internet connection.", Toast.LENGTH_LONG).show();
                 }
             }
         });
@@ -188,13 +227,23 @@ public class ClientActivity extends AppCompatActivity { // Ангел
 
                                 client_LL_SearchResult.addView(courseLayout);
 
+                                final CLCourse pointer = courses.get(i);
                                 courseLayout.setOnClickListener(new View.OnClickListener() {
                                     @Override
                                     public void onClick(View v) {
+                                        pointer.performClick();
+                                    }
+                                });
+                                // Турбо глупост
+                                /*courseLayout.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
                                         //Теглене и проверка дали потребителя е в този курс: ако не е -> CourseActivity , ако е -> SignedCourseActivity
+                                        showProgress();
                                         dbRefParticipation.child(courseLayout.getCourseId()).child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
                                             @Override
                                             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                                hideProgress();
                                                 if (!dataSnapshot.exists()) { // не е записан
                                                     Intent intent = new Intent(ClientActivity.this, CourseActivity.class);
                                                     intent.putExtra("courseId", courseLayout.getCourseId());
@@ -213,14 +262,14 @@ public class ClientActivity extends AppCompatActivity { // Ангел
 
                                             @Override
                                             public void onCancelled(@NonNull DatabaseError databaseError) {
-                                                if (!isInternetAvailable())
-                                                    Toast.makeText(getApplicationContext(), "No internet connection.", Toast.LENGTH_LONG).show();
-                                                if (databaseError != null)
-                                                    Toast.makeText(getApplicationContext(), databaseError.getMessage(), Toast.LENGTH_LONG).show();
+                                                hideProgress();
+                                                if (!isInternetAvailable()){
+                                                }
+                                                if (databaseError != null) showAlert("Error", databaseError.getMessage());
                                             }
                                         });
                                     }
-                                });
+                                });*/
 
                                 setMargins(courseLayout, _20px, _20px, _20px, _20px / 8);
                                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -282,6 +331,10 @@ public class ClientActivity extends AppCompatActivity { // Ангел
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
             findViewById(R.id.client_LL_HeadMenu).setElevation(_20px/4);
             findViewById(R.id.client_TV_ClearSearch).setElevation(_20px/8);
+
+            findViewById(R.id.client_CL_Loading).setElevation(_20px);
+            findViewById(R.id.client_CL_Alert).setElevation(_20px*2);
+            findViewById(R.id.client_CL_AlertBox).setElevation(_20px/4);
         }
 
         // ---------- Load Courses
@@ -307,9 +360,11 @@ public class ClientActivity extends AppCompatActivity { // Ангел
                     @Override
                     public void onClick(View v) {
                         //Теглене и проверка дали потребителя е в този курс: ако не е -> CourseActivity , ако е -> SignedCourseActivity
+                        showProgress();
                         dbRefParticipation.child(courseLayout.getCourseId()).child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                hideProgress();
                                 if (!dataSnapshot.exists()) { // не е записан
                                     Intent intent = new Intent(ClientActivity.this, CourseActivity.class);
                                     intent.putExtra("courseId", courseLayout.getCourseId());
@@ -328,10 +383,9 @@ public class ClientActivity extends AppCompatActivity { // Ангел
 
                             @Override
                             public void onCancelled(@NonNull DatabaseError databaseError) {
-                                if (!isInternetAvailable())
-                                    Toast.makeText(getApplicationContext(), "No internet connection.", Toast.LENGTH_LONG).show();
-                                if (databaseError != null)
-                                    Toast.makeText(getApplicationContext(), databaseError.getMessage(), Toast.LENGTH_LONG).show();
+                                hideProgress();
+                                if (!isInternetAvailable()){}
+                                if (databaseError != null) showAlert("Error", databaseError.getMessage());
                             }
                         });
                     }
@@ -392,10 +446,8 @@ public class ClientActivity extends AppCompatActivity { // Ангел
                                         ((LinearLayout) findViewById(R.id.client_LL_Ended)).addView(courseLayout);
                                     }
                                 }
-
                                 @Override
-                                public void onCancelled(@NonNull DatabaseError databaseError) {
-                                }
+                                public void onCancelled(@NonNull DatabaseError databaseError) { }
                             });
 
                         }
@@ -403,10 +455,8 @@ public class ClientActivity extends AppCompatActivity { // Ангел
 
                     @Override
                     public void onCancelled(@NonNull DatabaseError databaseError) {
-                        if (!isInternetAvailable())
-                            Toast.makeText(getApplicationContext(), "No internet connection.", Toast.LENGTH_LONG).show();
-                        if (databaseError != null)
-                            Toast.makeText(getApplicationContext(), "Load ongoing/ended: " + databaseError.getMessage(), Toast.LENGTH_LONG).show();
+                        if (!isInternetAvailable()){}
+                        if (databaseError != null) showAlert("Error", databaseError.getMessage());
                     }
                 });
             }
@@ -418,10 +468,8 @@ public class ClientActivity extends AppCompatActivity { // Ангел
             public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) { }
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-                if(databaseError!=null) Toast.makeText(getApplicationContext(), "Load Courses db error : " + databaseError.getMessage(), Toast.LENGTH_LONG).show();
-                if(!isInternetAvailable()){
-                    Toast.makeText(getApplicationContext(), "No internet connection.", Toast.LENGTH_LONG).show();
-                }
+                if(databaseError!=null) showAlert("Error", databaseError.getMessage());
+                if(!isInternetAvailable()){}
             }
         });
 
@@ -511,6 +559,11 @@ public class ClientActivity extends AppCompatActivity { // Ангел
             }
         });
 
+        //Animation Loading
+        animationLoading = (AnimationDrawable) findViewById(R.id.client_IV_LoadingBar).getBackground();
+        animationLoading.setOneShot(false);
+        animationLoading.start();
+
     }// end of InitializeUI()
     private ArrayList<CLCourse> courses = new ArrayList<CLCourse>();
 
@@ -548,12 +601,64 @@ public class ClientActivity extends AppCompatActivity { // Ангел
 
     /* ----- OnClickListeners [  END  ] ----- */
 
+    private AnimationDrawable animationLoading;
+    private boolean isAnimationLoadingOn = false;
+    private void showProgress(){
+        findViewById(R.id.client_CL_Loading).setVisibility(View.VISIBLE);
+        //isAnimationLoadingOn = true;
+    }
+    private void hideProgress(){
+        //if(isAnimationLoadingOn) {
+        findViewById(R.id.client_CL_Loading).setVisibility(View.INVISIBLE);
+        //isAnimationLoadingOn = false;
+        //}
+    }
+
+    private void showAlert(final String title, final String message){
+        ((TextView)findViewById(R.id.client_TV_AlertTitle)).setText(title);
+        ((TextView)findViewById(R.id.client_TV_AlertMessage)).setText(message);
+
+        findViewById(R.id.client_CL_Alert).setBackground(new BitmapDrawable(getResources(), createBlurBitmapFromScreen()));
+        findViewById(R.id.client_CL_Alert).setVisibility(View.VISIBLE);
+        Animation expandIn = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.expand_in);
+        findViewById(R.id.client_CL_AlertBox).startAnimation(expandIn);
+    }
+
+    private Bitmap createBlurBitmapFromScreen() {
+        Bitmap bitmap = null;
+        findViewById(R.id.client_CL_Main).setDrawingCacheEnabled(true);
+        bitmap = Bitmap.createBitmap(findViewById(R.id.client_CL_Main).getDrawingCache());
+        findViewById(R.id.client_CL_Main).setDrawingCacheEnabled(false);
+        bitmap = Bitmap.createScaledBitmap(bitmap, 480, 800, false);
+
+        Bitmap result = null;
+        try {
+            RenderScript rsScript = RenderScript.create(getApplicationContext());
+            Allocation alloc = Allocation.createFromBitmap(rsScript, bitmap);
+
+            ScriptIntrinsicBlur blur = ScriptIntrinsicBlur.create(rsScript, Element.U8_4(rsScript));
+            blur.setRadius(21);
+            blur.setInput(alloc);
+
+            result = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), Bitmap.Config.ARGB_8888);
+            Allocation outAlloc = Allocation.createFromBitmap(rsScript, result);
+
+            blur.forEach(outAlloc);
+            outAlloc.copyTo(result);
+
+            rsScript.destroy();
+        } catch (Exception e) {
+            return bitmap;
+        }
+        return result;
+    }
+
     //Utility
     private boolean isInternetAvailable() {
         ConnectivityManager cm = (ConnectivityManager)this.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
         boolean isConnected = activeNetwork != null && activeNetwork.isConnectedOrConnecting();
-        //if(!isConnected) showAlert("Alert", "No internet connection.");
+        if(!isConnected) showAlert("Alert", "No internet connection.");
         return isConnected;
     }
 
