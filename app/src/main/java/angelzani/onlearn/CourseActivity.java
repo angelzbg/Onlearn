@@ -2,8 +2,10 @@ package angelzani.onlearn;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.provider.CalendarContract;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
@@ -13,6 +15,8 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -30,6 +34,8 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.Calendar;
 import java.util.Date;
 
+
+
 public class CourseActivity extends AppCompatActivity { // Даниел
 
 
@@ -43,6 +49,7 @@ public class CourseActivity extends AppCompatActivity { // Даниел
     private TextView lectureName;
     private TextView lectureEmail;
     private LinearLayout groups;
+    private ImageView backBtn;
 
 
     @Override
@@ -63,8 +70,9 @@ public class CourseActivity extends AppCompatActivity { // Даниел
         lectureName=findViewById(R.id.course_TV_lectureName);
         lectureEmail=findViewById(R.id.course_TV_lectureEmail);
         groups=findViewById(R.id.course_LL_groups);
+        backBtn=findViewById(R.id.course_IV_back);
 
-        Intent intent=getIntent();
+        final Intent intent=getIntent();
 
         String courseId =intent.getStringExtra("courseId");
         String description=intent.getStringExtra("description");
@@ -72,6 +80,7 @@ public class CourseActivity extends AppCompatActivity { // Даниел
 
         courseName.setText(courseId);
         desc.setText(description);
+
 
         dbRefUsers.child(lecturerId).child("name").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -165,6 +174,7 @@ public class CourseActivity extends AppCompatActivity { // Даниел
                     fullBtn.setId(View.generateViewId());
                     fullBtn.setText("FULL");
 
+
                 if(currentNumber<max){
                     groupLayout.addView(joinBtn);
                 }
@@ -172,7 +182,12 @@ public class CourseActivity extends AppCompatActivity { // Даниел
                     groupLayout.addView(fullBtn);
                 }
 
+                joinBtn.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
 
+                    }
+                });
 
 
                 ConstraintSet cs = new ConstraintSet();
@@ -220,6 +235,14 @@ public class CourseActivity extends AppCompatActivity { // Даниел
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
                 Toast.makeText(getApplicationContext(), databaseError.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        });
+
+
+        backBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+               finish();
             }
         });
 
