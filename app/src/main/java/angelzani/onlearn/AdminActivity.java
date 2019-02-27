@@ -103,7 +103,7 @@ public class AdminActivity extends AppCompatActivity { // Ани
             }
         });
 
-        //Name TextView
+         //Name TextView
         ((TextView)findViewById(R.id.admin_TV_name)).setTextSize(TypedValue.COMPLEX_UNIT_PX, height/33);
         dbRefUsers.child(user.getUid()).child("name").addValueEventListener(new ValueEventListener() {
             @Override
@@ -130,12 +130,12 @@ public class AdminActivity extends AppCompatActivity { // Ани
         findViewById(R.id.admin_TV_HM_manage).setOnClickListener(switchMenu);
         findViewById(R.id.admin_TV_HM_add).setOnClickListener(switchMenu);
 
-            // ----- Elevation
+            /*----- Elevation ------ */
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
             findViewById(R.id.admin_LL_headMenu).setElevation(_20px/4);
         }
 
-            //------Теглене на всички курсове на Админ
+            /*------Теглене на всички курсове на Админ-------*/
         final GradientDrawable gradientDrawableBackgroundCourses = new GradientDrawable();
         gradientDrawableBackgroundCourses.setColor(Color.parseColor("#ffffff"));
         //gradientDrawableBackgroundCourses.setStroke(1, Color.parseColor("#000000"));
