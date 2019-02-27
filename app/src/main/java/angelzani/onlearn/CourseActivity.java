@@ -86,7 +86,7 @@ public class CourseActivity extends AppCompatActivity { // Даниел
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 String name = dataSnapshot.getValue(String.class);
-                lectureName.setText(name);
+                lectureName.setText("Lecturer:  "+name);
             }
 
             @Override
@@ -99,7 +99,7 @@ public class CourseActivity extends AppCompatActivity { // Даниел
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 String email = dataSnapshot.getValue(String.class);
-                lectureEmail.setText(email);
+                lectureEmail.setText("                   "+email);
             }
 
             @Override
