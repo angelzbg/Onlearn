@@ -27,6 +27,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.Calendar;
 import java.util.Date;
 
 public class CourseActivity extends AppCompatActivity { // Даниел
@@ -123,21 +124,36 @@ public class CourseActivity extends AppCompatActivity { // Даниел
                 TextView members=new TextView(getApplicationContext());
                 members.setId(View.generateViewId());
                 groupLayout.addView(members);
-                members.setText(currentNumber+"/"+max);
-
+                if(currentNumber<10) {
+                    members.setText("         " + currentNumber + "/" + max + "                ");
+                }
+                else{
+                    members.setText("        " + currentNumber + "/" + max + "                ");
+                }
                 Date startDateTime = new Date(start);
                 Date endDateTime=new Date(end);
 
+                Calendar cStart = Calendar.getInstance();
+                Calendar cEnd = Calendar.getInstance();
+                cStart.setTime(startDateTime);
+                cEnd.setTime(endDateTime);
+                int startDayOfYear = cStart.get(Calendar.DAY_OF_MONTH);
+                int startMouth=cStart.get(Calendar.MONTH)+1; // +1 защото връща предишния месец
+                int startYear=cStart.get(Calendar.YEAR);
+
+                int endDayOfYear=cEnd.get(Calendar.DAY_OF_MONTH);
+                int endMouth=cEnd.get(Calendar.MONTH)+1; // +1 защото връща предишния месец
+                int endYear=cEnd.get(Calendar.YEAR);
 
                 TextView startDate=new TextView(getApplicationContext());
                 startDate.setId(View.generateViewId());
                 groupLayout.addView(startDate);
-                startDate.setText(startDateTime.toString());
+                startDate.setText("Start date:  "+startDayOfYear+"/"+startMouth+"/"+startYear);
 
                 TextView endDate=new TextView(getApplicationContext());
                 endDate.setId(View.generateViewId());
                 groupLayout.addView(endDate);
-                endDate.setText(endDateTime.toString());
+                endDate.setText("End date:    "+endDayOfYear+"/"+endMouth+"/"+endYear);
 
 
                     Button joinBtn = new Button(getApplicationContext());
@@ -164,22 +180,22 @@ public class CourseActivity extends AppCompatActivity { // Даниел
                 cs.connect(groupNameTV.getId(), ConstraintSet.TOP, ConstraintSet.PARENT_ID, ConstraintSet.TOP);
                 cs.connect(groupNameTV.getId(), ConstraintSet.START, ConstraintSet.PARENT_ID, ConstraintSet.START);
 
-                cs.connect(members.getId(), ConstraintSet.TOP, groupNameTV.getId(), ConstraintSet.BOTTOM);
-                cs.connect(members.getId(), ConstraintSet.START, groupNameTV.getId(), ConstraintSet.START);
-
-                cs.connect(startDate.getId(), ConstraintSet.TOP, members.getId(), ConstraintSet.BOTTOM);
-                cs.connect(startDate.getId(), ConstraintSet.START, members.getId(), ConstraintSet.START);
+                cs.connect(startDate.getId(), ConstraintSet.TOP, groupNameTV.getId(), ConstraintSet.BOTTOM);
+                cs.connect(startDate.getId(), ConstraintSet.START, groupNameTV.getId(), ConstraintSet.START);
 
                 cs.connect(endDate.getId(), ConstraintSet.TOP, startDate.getId(), ConstraintSet.BOTTOM);
                 cs.connect(endDate.getId(), ConstraintSet.START, startDate.getId(), ConstraintSet.START);
 
+                cs.connect(members.getId(), ConstraintSet.TOP, groupNameTV.getId(), ConstraintSet.TOP);
+                cs.connect(members.getId(), ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END);
+
                 if(currentNumber<max){
-                    cs.connect(joinBtn.getId(),ConstraintSet.TOP, endDate.getId(), ConstraintSet.BOTTOM);
-                    cs.connect(joinBtn.getId(), ConstraintSet.START, endDate.getId(), ConstraintSet.START);
+                    cs.connect(joinBtn.getId(), ConstraintSet.TOP, members.getId(), ConstraintSet.BOTTOM);
+                    cs.connect(joinBtn.getId(), ConstraintSet.START, members.getId(), ConstraintSet.START);
                 }
                 else{
-                    cs.connect(fullBtn.getId(),ConstraintSet.TOP, endDate.getId(),ConstraintSet.BOTTOM);
-                    cs.connect(fullBtn.getId(),ConstraintSet.START,endDate.getId(),ConstraintSet.START);
+                    cs.connect(fullBtn.getId(), ConstraintSet.TOP, members.getId(), ConstraintSet.BOTTOM);
+                    cs.connect(fullBtn.getId(), ConstraintSet.START, members.getId(), ConstraintSet.START);
                 }
 
 
