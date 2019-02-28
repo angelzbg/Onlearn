@@ -3,6 +3,8 @@ package angelzani.onlearn;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.Point;
+import android.graphics.drawable.GradientDrawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.provider.CalendarContract;
@@ -12,6 +14,8 @@ import android.support.constraint.ConstraintLayout;
 import android.support.constraint.ConstraintSet;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.TypedValue;
+import android.view.Display;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -51,6 +55,8 @@ public class CourseActivity extends AppCompatActivity { // Даниел
     private LinearLayout groups;
     private ImageView backBtn;
 
+    private int width, height;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,6 +78,40 @@ public class CourseActivity extends AppCompatActivity { // Даниел
         groups=findViewById(R.id.course_LL_groups);
         backBtn=findViewById(R.id.course_IV_back);
 
+        Display display = getWindowManager().getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+        width = size.x;
+        height = size.y;
+
+        final GradientDrawable gradientDrawableBackgroundCourses = new GradientDrawable();
+        gradientDrawableBackgroundCourses.setColor(Color.parseColor("#ffffff"));
+        gradientDrawableBackgroundCourses.setShape(GradientDrawable.RECTANGLE);
+        gradientDrawableBackgroundCourses.setCornerRadii(new float[] { height/20, height/20, height/20, height/20, height/20, height/20, height/20, height/20});
+
+        backBtn.getLayoutParams().height=height/11;
+        backBtn.getLayoutParams().width=width/11;
+        backBtn.setColorFilter(Color.parseColor("#ffffff"));
+
+        courseName.getLayoutParams().height=height/15;
+        courseName.setTextSize(TypedValue.COMPLEX_UNIT_PX, height/30);
+        courseName.setTextColor(getResources().getColor(R.color.white));
+
+        desc.setTextSize(TypedValue.COMPLEX_UNIT_PX, height/36);
+        desc.setTextColor(getResources().getColor(R.color.light_blue3));
+        desc.setPadding(height/40,height/100,height/70,0);
+        desc.setBackground(gradientDrawableBackgroundCourses);
+
+        lectureName.setTextSize(TypedValue.COMPLEX_UNIT_PX, height/36);
+        lectureName.setTextColor(getResources().getColor(R.color.light_blue3));
+        lectureName.setPadding(height/40,height/150,height/40,0);
+
+        lectureEmail.setTextSize(TypedValue.COMPLEX_UNIT_PX, height/36);
+        lectureEmail.setTextColor(getResources().getColor(R.color.light_blue3));
+        lectureEmail.setPadding(height/40,height/150,height/40,height/80);
+
+
+
         final Intent intent=getIntent();
 
         String courseId =intent.getStringExtra("courseId");
@@ -79,7 +119,7 @@ public class CourseActivity extends AppCompatActivity { // Даниел
         String lecturerId=intent.getStringExtra("lecturerId");
 
         courseName.setText(courseId);
-        desc.setText(description);
+        desc.setText("Description:  "+description);
 
 
         dbRefUsers.child(lecturerId).child("name").addListenerForSingleValueEvent(new ValueEventListener() {
@@ -99,7 +139,7 @@ public class CourseActivity extends AppCompatActivity { // Даниел
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 String email = dataSnapshot.getValue(String.class);
-                lectureEmail.setText("                   "+email);
+                lectureEmail.setText("@ Email:   "+email);
             }
 
             @Override
@@ -107,7 +147,6 @@ public class CourseActivity extends AppCompatActivity { // Даниел
                 Toast.makeText(getApplicationContext(), databaseError.getMessage(), Toast.LENGTH_LONG).show();
             }
         });
-
 
         long millis = System.currentTimeMillis();
         Query query1 = dbRefGroups.child(courseId).orderByChild("start").startAt(millis);
@@ -125,19 +164,36 @@ public class CourseActivity extends AppCompatActivity { // Даниел
                 groupLayout.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
                 groups.addView(groupLayout);
 
+                groupLayout.setBackground(gradientDrawableBackgroundCourses);
+                groupLayout.setPadding(height/35,height/80,height/40,height/80);
+
                 TextView groupNameTV = new TextView(getApplicationContext());
                 groupNameTV.setId(View.generateViewId());
                 groupLayout.addView(groupNameTV);
                 groupNameTV.setText(groupName);
 
+                groupNameTV.setTextSize(TypedValue.COMPLEX_UNIT_PX, height/40);
+                groupNameTV.setTextColor(getResources().getColor(R.color.light_blue3));
+                groupNameTV.setMaxLines(2);
+
                 TextView members=new TextView(getApplicationContext());
                 members.setId(View.generateViewId());
                 groupLayout.addView(members);
+
+
+                members.setTextSize(TypedValue.COMPLEX_UNIT_PX, height/36);
+                members.setTextColor(getResources().getColor(R.color.light_blue3));
+                members.setMaxLines(2);
+
+
+
+
+
                 if(currentNumber<10) {
-                    members.setText("         " + currentNumber + "/" + max + "                ");
+                    members.setText("       "+currentNumber + "/" + max);
                 }
                 else{
-                    members.setText("        " + currentNumber + "/" + max + "                ");
+                    members.setText("      "+currentNumber + "/" + max);
                 }
                 Date startDateTime = new Date(start);
                 Date endDateTime=new Date(end);
@@ -168,12 +224,17 @@ public class CourseActivity extends AppCompatActivity { // Даниел
                     Button joinBtn = new Button(getApplicationContext());
                     joinBtn.setId(View.generateViewId());
                     joinBtn.setText("JOIN");
+                    joinBtn.setBackgroundColor(Color.parseColor("#00ff00"));
+                    joinBtn.setTextColor(Color.parseColor("#ffffff"));
+                    joinBtn.setTextSize(TypedValue.COMPLEX_UNIT_PX, height/30);
 
 
                     Button fullBtn =new Button(getApplicationContext());
                     fullBtn.setId(View.generateViewId());
                     fullBtn.setText("FULL");
-
+                    fullBtn.setBackgroundColor(Color.parseColor("#ff0000"));
+                    fullBtn.setTextColor(Color.parseColor("#ffffff"));
+                    fullBtn.setTextSize(TypedValue.COMPLEX_UNIT_PX, height/30);
 
                 if(currentNumber<max){
                     groupLayout.addView(joinBtn);
@@ -181,6 +242,15 @@ public class CourseActivity extends AppCompatActivity { // Даниел
                 else {
                     groupLayout.addView(fullBtn);
                 }
+
+                startDate.setTextSize(TypedValue.COMPLEX_UNIT_PX, height/40);
+                startDate.setTextColor(getResources().getColor(R.color.light_blue3));
+                startDate.setMaxLines(2);
+
+                endDate.setTextSize(TypedValue.COMPLEX_UNIT_PX, height/40);
+                endDate.setTextColor(getResources().getColor(R.color.light_blue3));
+                endDate.setMaxLines(2);
+
 
                 joinBtn.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -202,11 +272,11 @@ public class CourseActivity extends AppCompatActivity { // Даниел
                 cs.connect(endDate.getId(), ConstraintSet.START, startDate.getId(), ConstraintSet.START);
 
                 cs.connect(members.getId(), ConstraintSet.TOP, groupNameTV.getId(), ConstraintSet.TOP);
-                cs.connect(members.getId(), ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END);
+                cs.connect(members.getId(), ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END, width/9);
 
                 if(currentNumber<max){
                     cs.connect(joinBtn.getId(), ConstraintSet.TOP, members.getId(), ConstraintSet.BOTTOM);
-                    cs.connect(joinBtn.getId(), ConstraintSet.START, members.getId(), ConstraintSet.START);
+                    cs.connect(joinBtn.getId(), ConstraintSet.START, members.getId(), ConstraintSet.START );
                 }
                 else{
                     cs.connect(fullBtn.getId(), ConstraintSet.TOP, members.getId(), ConstraintSet.BOTTOM);
