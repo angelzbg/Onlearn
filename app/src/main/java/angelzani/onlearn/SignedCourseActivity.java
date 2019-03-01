@@ -147,6 +147,24 @@ public class SignedCourseActivity extends AppCompatActivity { // Калофер
             }
         });
 
+        //Всички материали от дисциплината
+        dbRefMaterials.child(courseIdExtra).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot DATA) {
+                for(DataSnapshot dataSnapshot : DATA.getChildren()) {
+                    String materialName = dataSnapshot.getKey();
+                    String materialURL = dataSnapshot.getValue(String.class);
+
+                    //Displaying data
+                    Toast.makeText(getApplicationContext(), materialName + " - " + materialURL, Toast.LENGTH_LONG).show();
+                }
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Toast.makeText(getApplicationContext(), databaseError.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        });
+
     }// края на onCreate()
 
     //Utility
