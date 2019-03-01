@@ -92,12 +92,19 @@ public class LoginActivity extends AppCompatActivity { // Ангел
             }
         }, 250); // понеже showAlert прави снимка на лейаута и го блърва за ефекта при изскачащия прозорец за грешки, трябва малко да се забави тази проверка иначе -> NullPointerException
 
+    }//end onCreate()
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        showProgress();
         FirebaseUser user = mAuth.getCurrentUser();
         if(user!=null){ // логнати сме
             //теглим атрибут role и роверяваме дали е client или admin -> ClientActivity || AdminActivity
             mRef.child("users").child(user.getUid()).child("role").addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    hideProgress();
                     finish();
                     if(dataSnapshot.getValue(String.class).equals("admin")) startActivity(new Intent(LoginActivity.this, AdminActivity.class));
                     else startActivity(new Intent(LoginActivity.this, ClientActivity.class));
@@ -105,13 +112,13 @@ public class LoginActivity extends AppCompatActivity { // Ангел
                 @Override
                 public void onCancelled(@NonNull DatabaseError databaseError) {
                     if(!isInternetAvailable()) {
+                        hideProgress();
                         //Toast.makeText(getApplicationContext(), "No Internet Connection.", Toast.LENGTH_LONG).show();
                     }
                 }
             });
-        }
-
-    }//end onCreate()
+        } else hideProgress();
+    }
 
     private void initializeUI(){
         Display display = getWindowManager().getDefaultDisplay();
@@ -209,7 +216,7 @@ public class LoginActivity extends AppCompatActivity { // Ангел
                 findViewById(R.id.login_CL_Alert).setVisibility(View.INVISIBLE);
             }
         });
-    }
+    }// end initializeUI()
 
     /*----- OnClickListeners [ START ] -----*/
 

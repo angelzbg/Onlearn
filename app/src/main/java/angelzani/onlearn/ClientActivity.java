@@ -127,6 +127,14 @@ public class ClientActivity extends AppCompatActivity { // Ангел
         gradientDrawable.setStroke(1, Color.parseColor("#82B1FF"));
         findViewById(R.id.client_TV_AlertClose).setBackground(gradientDrawable);
 
+        // Alert dialog close
+        findViewById(R.id.client_TV_AlertClose).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                findViewById(R.id.client_CL_Alert).setVisibility(View.INVISIBLE);
+            }
+        });
+
         /* ----- Header Layout ----- */
         findViewById(R.id.client_CL_Head).getLayoutParams().height = height/16;
         //Profile Icon
@@ -211,93 +219,89 @@ public class ClientActivity extends AppCompatActivity { // Ангел
                         final LinearLayout client_LL_SearchResult = findViewById(R.id.client_LL_SearchResult);
                         client_LL_SearchResult.removeAllViews();
 
-                        final int currentCoursesSize = courses.size(); // понеже следим за нови дисцплини от датабазата и може да се получат разни...
-                        for(int i=0; i<currentCoursesSize; i++) {
-                            if(courses.get(i).getCourseId().toLowerCase().contains(searchString.toLowerCase())) {
-                                final GradientDrawable gradientDrawableBackgroundCourses = new GradientDrawable();
-                                gradientDrawableBackgroundCourses.setColor(Color.parseColor("#ffffff"));
-                                //gradientDrawableBackgroundCourses.setStroke(1, Color.parseColor("#000000"));
-                                gradientDrawableBackgroundCourses.setShape(GradientDrawable.RECTANGLE);
-                                gradientDrawableBackgroundCourses.setCornerRadius(_20px/2);
+                        dbRefCourse.orderByKey().startAt(searchString).endAt(searchString + "\uf8ff").addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot DATA) {
+                                for(DataSnapshot dataSnapshot : DATA.getChildren()) {
+                                    final GradientDrawable gradientDrawableBackgroundCourses = new GradientDrawable();
+                                    gradientDrawableBackgroundCourses.setColor(Color.parseColor("#ffffff"));
+                                    //gradientDrawableBackgroundCourses.setStroke(1, Color.parseColor("#000000"));
+                                    gradientDrawableBackgroundCourses.setShape(GradientDrawable.RECTANGLE);
+                                    gradientDrawableBackgroundCourses.setCornerRadius(_20px/2);
 
-                                final CLCourse courseLayout = new CLCourse(getApplicationContext(), courses.get(i).getCourseId(), courses.get(i).getDescription(), courses.get(i).getLecturerId());
-                                courseLayout.setId(View.generateViewId());
+                                    final CLCourse courseLayout = new CLCourse(getApplicationContext(), dataSnapshot.getKey(), dataSnapshot.child("descr").getValue(String.class), dataSnapshot.child("lect").getValue(String.class));
+                                    courseLayout.setId(View.generateViewId());
+                                    courseLayout.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+                                    client_LL_SearchResult.addView(courseLayout);
 
-                                courseLayout.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
-
-                                client_LL_SearchResult.addView(courseLayout);
-
-                                final CLCourse pointer = courses.get(i);
-                                courseLayout.setOnClickListener(new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View v) {
-                                        pointer.performClick();
-                                    }
-                                });
-                                // Турбо глупост
-                                /*courseLayout.setOnClickListener(new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View v) {
-                                        //Теглене и проверка дали потребителя е в този курс: ако не е -> CourseActivity , ако е -> SignedCourseActivity
-                                        showProgress();
-                                        dbRefParticipation.child(courseLayout.getCourseId()).child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
-                                            @Override
-                                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                                hideProgress();
-                                                if (!dataSnapshot.exists()) { // не е записан
-                                                    Intent intent = new Intent(ClientActivity.this, CourseActivity.class);
-                                                    intent.putExtra("courseId", courseLayout.getCourseId());
-                                                    intent.putExtra("description", courseLayout.getDescription());
-                                                    intent.putExtra("lecturerId", courseLayout.getLecturerId());
-                                                    startActivity(intent);
-                                                } else { // вече е записан в тази дисциплина
-                                                    Intent intent = new Intent(ClientActivity.this, SignedCourseActivity.class);
-                                                    intent.putExtra("courseId", courseLayout.getCourseId());
-                                                    intent.putExtra("description", courseLayout.getDescription());
-                                                    intent.putExtra("lecturerId", courseLayout.getLecturerId());
-                                                    intent.putExtra("groupId", dataSnapshot.getValue(String.class));
-                                                    startActivity(intent);
+                                    courseLayout.setOnClickListener(new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View v) {
+                                            //Теглене и проверка дали потребителя е в този курс: ако не е -> CourseActivity , ако е -> SignedCourseActivity
+                                            showProgress();
+                                            dbRefParticipation.child(courseLayout.getCourseId()).child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+                                                @Override
+                                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                                    hideProgress();
+                                                    if (!dataSnapshot.exists()) { // не е записан
+                                                        Intent intent = new Intent(ClientActivity.this, CourseActivity.class);
+                                                        intent.putExtra("courseId", courseLayout.getCourseId());
+                                                        intent.putExtra("description", courseLayout.getDescription());
+                                                        intent.putExtra("lecturerId", courseLayout.getLecturerId());
+                                                        startActivity(intent);
+                                                    } else { // вече е записан в тази дисциплина
+                                                        Intent intent = new Intent(ClientActivity.this, SignedCourseActivity.class);
+                                                        intent.putExtra("courseId", courseLayout.getCourseId());
+                                                        intent.putExtra("description", courseLayout.getDescription());
+                                                        intent.putExtra("lecturerId", courseLayout.getLecturerId());
+                                                        intent.putExtra("groupId", dataSnapshot.getValue(String.class));
+                                                        startActivity(intent);
+                                                    }
                                                 }
-                                            }
 
-                                            @Override
-                                            public void onCancelled(@NonNull DatabaseError databaseError) {
-                                                hideProgress();
-                                                if (!isInternetAvailable()){
+                                                @Override
+                                                public void onCancelled(@NonNull DatabaseError databaseError) {
+                                                    hideProgress();
+                                                    if (!isInternetAvailable()){
+                                                    }
+                                                    if (databaseError != null) showAlert("Error", databaseError.getMessage());
                                                 }
-                                                if (databaseError != null) showAlert("Error", databaseError.getMessage());
-                                            }
-                                        });
-                                    }
-                                });*/
+                                            });
+                                        }
+                                    });
 
-                                setMargins(courseLayout, _20px, _20px, _20px, _20px / 8);
-                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                                    courseLayout.setElevation(_20px / 10);
-                                } else {
-                                    gradientDrawableBackgroundCourses.setStroke(1, Color.parseColor("#000000"));
+                                    setMargins(courseLayout, _20px, _20px, _20px, _20px / 8);
+                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                                        courseLayout.setElevation(_20px / 10);
+                                    } else {
+                                        gradientDrawableBackgroundCourses.setStroke(1, Color.parseColor("#000000"));
+                                    }
+                                    courseLayout.setBackground(gradientDrawableBackgroundCourses);
+
+                                    TextView titleView = new TextView(getApplicationContext());
+                                    titleView.setId(View.generateViewId());
+                                    courseLayout.addView(titleView);
+
+                                    ConstraintSet cs = new ConstraintSet();
+                                    cs.clone(courseLayout);
+                                    cs.connect(titleView.getId(), ConstraintSet.START, ConstraintSet.PARENT_ID, ConstraintSet.START, _20px);
+                                    cs.connect(titleView.getId(), ConstraintSet.TOP, ConstraintSet.PARENT_ID, ConstraintSet.TOP, _20px);
+                                    cs.connect(titleView.getId(), ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END, _20px);
+                                    cs.connect(titleView.getId(), ConstraintSet.BOTTOM, ConstraintSet.PARENT_ID, ConstraintSet.BOTTOM, _20px);
+                                    cs.applyTo(courseLayout);
+
+                                    titleView.setText(courseLayout.getCourseId());
+                                    titleView.setTextSize(TypedValue.COMPLEX_UNIT_PX, _20px);
+                                    titleView.setTextColor(getResources().getColor(R.color.light_blue3));
+                                    titleView.setMaxLines(2);
                                 }
-                                courseLayout.setBackground(gradientDrawableBackgroundCourses);
-
-                                TextView titleView = new TextView(getApplicationContext());
-                                titleView.setId(View.generateViewId());
-                                courseLayout.addView(titleView);
-
-                                ConstraintSet cs = new ConstraintSet();
-                                cs.clone(courseLayout);
-                                // KOE VIEW , КОЯ СТРАНА, ЗА КОЕ VIEW, ЗА КОЕ СТРАНА, КОЛКО ОТСТОЯНИЕ
-                                cs.connect(titleView.getId(), ConstraintSet.START, ConstraintSet.PARENT_ID, ConstraintSet.START, _20px);
-                                cs.connect(titleView.getId(), ConstraintSet.TOP, ConstraintSet.PARENT_ID, ConstraintSet.TOP, _20px);
-                                cs.connect(titleView.getId(), ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END, _20px);
-                                cs.connect(titleView.getId(), ConstraintSet.BOTTOM, ConstraintSet.PARENT_ID, ConstraintSet.BOTTOM, _20px);
-                                cs.applyTo(courseLayout);
-
-                                titleView.setText(courseLayout.getCourseId());
-                                titleView.setTextSize(TypedValue.COMPLEX_UNIT_PX, _20px);
-                                titleView.setTextColor(getResources().getColor(R.color.light_blue3));
-                                titleView.setMaxLines(2);
                             }
-                        }
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+                                if (!isInternetAvailable()){ }
+                                if (databaseError != null) showAlert("Error", databaseError.getMessage());
+                            }
+                        });
 
                         return;
                     }
@@ -338,127 +342,123 @@ public class ClientActivity extends AppCompatActivity { // Ангел
         }
 
         // ---------- Load Courses
-        final GradientDrawable gradientDrawableBackgroundCourses = new GradientDrawable();
+        gradientDrawableBackgroundCourses = new GradientDrawable();
         gradientDrawableBackgroundCourses.setColor(Color.parseColor("#ffffff"));
         //gradientDrawableBackgroundCourses.setStroke(1, Color.parseColor("#000000"));
         gradientDrawableBackgroundCourses.setShape(GradientDrawable.RECTANGLE);
         gradientDrawableBackgroundCourses.setCornerRadius(_20px/2);
 
-        dbRefCourse.orderByKey().addChildEventListener(new ChildEventListener() {
+        loadCourses();
+
+        // ----- Зареждаме в ONGOING || ENDED
+        dbRefParticipation.orderByChild(user.getUid()).addChildEventListener(new ChildEventListener(){
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                // ----- Зареждаме в ALL
-                final CLCourse courseLayout = new CLCourse(getApplicationContext(), dataSnapshot.getKey(), dataSnapshot.child("descr").getValue(String.class), dataSnapshot.child("lect").getValue(String.class));
-                courseLayout.setId(View.generateViewId());
 
-                courseLayout.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+                final String courseId = dataSnapshot.getKey();
+                final String groupId = dataSnapshot.child(user.getUid()).getValue(String.class);
 
-                courses.add(courseLayout);
-                ((LinearLayout) findViewById(R.id.client_LL_All)).addView(courseLayout);
+                for(int i=0; i<courses.size(); i++) {
+                    if(courses.get(i).getCourseId().equals(courseId)) { // вече го имаме зареден от dbRefCourse.orderByKey().startAt(last_courseId_loaded).limitToFirst(10).addChildEventListener
 
-                courseLayout.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        //Теглене и проверка дали потребителя е в този курс: ако не е -> CourseActivity , ако е -> SignedCourseActivity
-                        showProgress();
-                        dbRefParticipation.child(courseLayout.getCourseId()).child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+                        final CLCourse courseLayout = courses.get(i);
+                        courseLayout.setOnClickListener(new View.OnClickListener() { // ще променим кликъра да не тегли излишно от датабазата (знаем че е записан)
                             @Override
-                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                hideProgress();
-                                if (!dataSnapshot.exists()) { // не е записан
-                                    Intent intent = new Intent(ClientActivity.this, CourseActivity.class);
-                                    intent.putExtra("courseId", courseLayout.getCourseId());
-                                    intent.putExtra("description", courseLayout.getDescription());
-                                    intent.putExtra("lecturerId", courseLayout.getLecturerId());
-                                    startActivity(intent);
-                                } else { // вече е записан в тази дисциплина
-                                    Intent intent = new Intent(ClientActivity.this, SignedCourseActivity.class);
-                                    intent.putExtra("courseId", courseLayout.getCourseId());
-                                    intent.putExtra("description", courseLayout.getDescription());
-                                    intent.putExtra("lecturerId", courseLayout.getLecturerId());
-                                    intent.putExtra("groupId", dataSnapshot.getValue(String.class));
-                                    startActivity(intent);
-                                }
-                            }
-
-                            @Override
-                            public void onCancelled(@NonNull DatabaseError databaseError) {
-                                hideProgress();
-                                if (!isInternetAvailable()){}
-                                if (databaseError != null) showAlert("Error", databaseError.getMessage());
+                            public void onClick(View v) {
+                                Intent intent = new Intent(ClientActivity.this, SignedCourseActivity.class);
+                                intent.putExtra("courseId", courseLayout.getCourseId());
+                                intent.putExtra("description", courseLayout.getDescription());
+                                intent.putExtra("lecturerId", courseLayout.getLecturerId());
+                                intent.putExtra("groupId", groupId);
+                                startActivity(intent);
                             }
                         });
+
+                        dbRefGroups.child(courseLayout.getCourseId()).child(groupId).child("end").addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                ((ViewManager) courseLayout.getParent()).removeView(courseLayout);
+                                if (dataSnapshot.getValue(Long.class) > System.currentTimeMillis()) { // отива в ONGOING
+                                    ((LinearLayout) findViewById(R.id.client_LL_Ongoing)).addView(courseLayout);
+                                } else { // отива в ENDED
+                                    ((LinearLayout) findViewById(R.id.client_LL_Ended)).addView(courseLayout);
+                                }
+                            }
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) { }
+                        });
+
+                        return; // излизаме от onChildAdded()
                     }
-                });
-
-                setMargins(courseLayout, _20px, _20px, _20px, _20px / 8);
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    courseLayout.setElevation(_20px / 10);
-                } else {
-                    gradientDrawableBackgroundCourses.setStroke(1, Color.parseColor("#000000"));
                 }
-                courseLayout.setBackground(gradientDrawableBackgroundCourses);
 
-                TextView titleView = new TextView(getApplicationContext());
-                titleView.setId(View.generateViewId());
-                courseLayout.addView(titleView);
-
-                ConstraintSet cs = new ConstraintSet();
-                cs.clone(courseLayout);
-                // KOE VIEW , КОЯ СТРАНА, ЗА КОЕ VIEW, ЗА КОЕ СТРАНА, КОЛКО ОТСТОЯНИЕ
-                cs.connect(titleView.getId(), ConstraintSet.START, ConstraintSet.PARENT_ID, ConstraintSet.START, _20px);
-                cs.connect(titleView.getId(), ConstraintSet.TOP, ConstraintSet.PARENT_ID, ConstraintSet.TOP, _20px);
-                cs.connect(titleView.getId(), ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END, _20px);
-                cs.connect(titleView.getId(), ConstraintSet.BOTTOM, ConstraintSet.PARENT_ID, ConstraintSet.BOTTOM, _20px);
-                cs.applyTo(courseLayout);
-
-                titleView.setText(courseLayout.getCourseId());
-                titleView.setTextSize(TypedValue.COMPLEX_UNIT_PX, _20px);
-                titleView.setTextColor(getResources().getColor(R.color.light_blue3));
-                titleView.setMaxLines(2);
-
-                // ----- Зареждаме в ONGOING || ENDED
-                dbRefParticipation.child(courseLayout.getCourseId()).child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+                //щом не сме return-али -> трябва да добавим дисциплината в лейаутите
+                dbRefCourse.child(courseId).addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        final String groupIdCurrentBlock = dataSnapshot.getValue(String.class);
-                        if (dataSnapshot.exists()) { // записан е в тази дисциплина
+                        final CLCourse courseLayout = new CLCourse(getApplicationContext(), courseId, dataSnapshot.child("descr").getValue(String.class), dataSnapshot.child("lect").getValue(String.class));
+                        courseLayout.setId(View.generateViewId());
+                        courseLayout.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+                        courses.add(courseLayout);
 
-                            courseLayout.setOnClickListener(new View.OnClickListener() { // ще променим кликъра да не тегли излишно от датабазата (знаем че е записан)
-                                @Override
-                                public void onClick(View v) {
-                                    Intent intent = new Intent(ClientActivity.this, SignedCourseActivity.class);
-                                    intent.putExtra("courseId", courseLayout.getCourseId());
-                                    intent.putExtra("description", courseLayout.getDescription());
-                                    intent.putExtra("lecturerId", courseLayout.getLecturerId());
-                                    intent.putExtra("groupId", groupIdCurrentBlock);
-                                    startActivity(intent);
+                        dbRefGroups.child(courseLayout.getCourseId()).child(groupId).child("end").addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                ((ViewManager) courseLayout.getParent()).removeView(courseLayout);
+                                if (dataSnapshot.getValue(Long.class) > System.currentTimeMillis()) { // отива в ONGOING
+                                    ((LinearLayout) findViewById(R.id.client_LL_Ongoing)).addView(courseLayout);
+                                } else { // отива в ENDED
+                                    ((LinearLayout) findViewById(R.id.client_LL_Ended)).addView(courseLayout);
                                 }
-                            });
+                            }
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) { }
+                        });
 
-                            dbRefGroups.child(courseLayout.getCourseId()).child(dataSnapshot.getValue(String.class)).child("end").addListenerForSingleValueEvent(new ValueEventListener() {
-                                @Override
-                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                    ((ViewManager) courseLayout.getParent()).removeView(courseLayout);
-                                    if (dataSnapshot.getValue(Long.class) > System.currentTimeMillis()) { // отива в ONGOING
-                                        ((LinearLayout) findViewById(R.id.client_LL_Ongoing)).addView(courseLayout);
-                                    } else { // отива в ENDED
-                                        ((LinearLayout) findViewById(R.id.client_LL_Ended)).addView(courseLayout);
-                                    }
-                                }
-                                @Override
-                                public void onCancelled(@NonNull DatabaseError databaseError) { }
-                            });
+                        courseLayout.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                Intent intent = new Intent(ClientActivity.this, SignedCourseActivity.class);
+                                intent.putExtra("courseId", courseLayout.getCourseId());
+                                intent.putExtra("description", courseLayout.getDescription());
+                                intent.putExtra("lecturerId", courseLayout.getLecturerId());
+                                intent.putExtra("groupId", groupId);
+                                startActivity(intent);
+                            }
+                        });
 
+                        setMargins(courseLayout, _20px, _20px, _20px, _20px / 8);
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                            courseLayout.setElevation(_20px / 10);
+                        } else {
+                            gradientDrawableBackgroundCourses.setStroke(1, Color.parseColor("#000000"));
                         }
-                    }
+                        courseLayout.setBackground(gradientDrawableBackgroundCourses);
 
+                        TextView titleView = new TextView(getApplicationContext());
+                        titleView.setId(View.generateViewId());
+                        courseLayout.addView(titleView);
+
+                        ConstraintSet cs = new ConstraintSet();
+                        cs.clone(courseLayout);
+                        cs.connect(titleView.getId(), ConstraintSet.START, ConstraintSet.PARENT_ID, ConstraintSet.START, _20px);
+                        cs.connect(titleView.getId(), ConstraintSet.TOP, ConstraintSet.PARENT_ID, ConstraintSet.TOP, _20px);
+                        cs.connect(titleView.getId(), ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END, _20px);
+                        cs.connect(titleView.getId(), ConstraintSet.BOTTOM, ConstraintSet.PARENT_ID, ConstraintSet.BOTTOM, _20px);
+                        cs.applyTo(courseLayout);
+
+                        titleView.setText(courseLayout.getCourseId());
+                        titleView.setTextSize(TypedValue.COMPLEX_UNIT_PX, _20px);
+                        titleView.setTextColor(getResources().getColor(R.color.light_blue3));
+                        titleView.setMaxLines(2);
+                    }
                     @Override
                     public void onCancelled(@NonNull DatabaseError databaseError) {
-                        if (!isInternetAvailable()){}
-                        if (databaseError != null) showAlert("Error", databaseError.getMessage());
+                        if(!isInternetAvailable()) {}
+                        showAlert("Error", databaseError.getMessage());
                     }
                 });
+
             }
             @Override
             public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) { }
@@ -468,8 +468,23 @@ public class ClientActivity extends AppCompatActivity { // Ангел
             public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) { }
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-                if(databaseError!=null) showAlert("Error", databaseError.getMessage());
-                if(!isInternetAvailable()){}
+                if (!isInternetAvailable()) { }
+                if (databaseError != null) showAlert("Error", databaseError.getMessage());
+            }
+        });
+
+        // -------------------- Scroll Logic (ако scrolla в courses е стигнал най-долу трябва да зареди следващите 10 специалности и т.н.)
+        final ScrollView scrollAll = findViewById(R.id.client_SV_All);
+        scrollAll.getViewTreeObserver().addOnScrollChangedListener(new ViewTreeObserver.OnScrollChangedListener() {
+            @Override
+            public void onScrollChanged() {
+                if (findViewById(R.id.client_LL_All).getHeight() == (scrollAll.getHeight() + scrollAll.getScrollY())) {
+                    //scroll view is at bottom
+                    showProgress();
+                    loadCourses();
+                } else {
+                    //scroll view is not at bottom
+                }
             }
         });
 
@@ -566,6 +581,85 @@ public class ClientActivity extends AppCompatActivity { // Ангел
 
     }// end of InitializeUI()
     private ArrayList<CLCourse> courses = new ArrayList<CLCourse>();
+    private ArrayList<CLCourse> course_ongoing_ended = new ArrayList<CLCourse>();
+    private String last_courseId_loaded = " ";
+    private GradientDrawable gradientDrawableBackgroundCourses;
+
+    private void loadCourses() {
+        dbRefCourse.orderByKey().startAt(last_courseId_loaded).limitToFirst(10).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot DATA) {
+                hideProgress();
+                for(DataSnapshot dataSnapshot : DATA.getChildren()) {
+
+                    boolean isCurrentLoaded = false;
+
+                    for(int i=0; i<courses.size(); i++) {
+                        if(courses.get(i).getCourseId().equals(dataSnapshot.getKey())) {
+                            isCurrentLoaded = true; // вече имаме тази група в лейаута -> избягваме създаване на еднакви обекти (може вече да е зареден в ongoing || ended LinearLayout)
+                            break;
+                        }
+                    }
+
+                    last_courseId_loaded = dataSnapshot.getKey();
+
+                    if(!isCurrentLoaded) {
+                        // ----- Зареждаме в ALL
+                        final CLCourse courseLayout = new CLCourse(getApplicationContext(), dataSnapshot.getKey(), dataSnapshot.child("descr").getValue(String.class), dataSnapshot.child("lect").getValue(String.class));
+                        courseLayout.setId(View.generateViewId());
+
+                        courseLayout.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+
+                        courses.add(courseLayout);
+                        ((LinearLayout) findViewById(R.id.client_LL_All)).addView(courseLayout);
+
+                        courseLayout.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                Intent intent = new Intent(ClientActivity.this, CourseActivity.class);
+                                intent.putExtra("courseId", courseLayout.getCourseId());
+                                intent.putExtra("description", courseLayout.getDescription());
+                                intent.putExtra("lecturerId", courseLayout.getLecturerId());
+                                startActivity(intent);
+                            }
+                        });
+
+                        final int _20px = height/40;
+
+                        setMargins(courseLayout, _20px, _20px, _20px, _20px / 8);
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                            courseLayout.setElevation(_20px / 10);
+                        } else {
+                            gradientDrawableBackgroundCourses.setStroke(1, Color.parseColor("#000000"));
+                        }
+                        courseLayout.setBackground(gradientDrawableBackgroundCourses);
+
+                        TextView titleView = new TextView(getApplicationContext());
+                        titleView.setId(View.generateViewId());
+                        courseLayout.addView(titleView);
+
+                        ConstraintSet cs = new ConstraintSet();
+                        cs.clone(courseLayout);
+                        cs.connect(titleView.getId(), ConstraintSet.START, ConstraintSet.PARENT_ID, ConstraintSet.START, _20px);
+                        cs.connect(titleView.getId(), ConstraintSet.TOP, ConstraintSet.PARENT_ID, ConstraintSet.TOP, _20px);
+                        cs.connect(titleView.getId(), ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END, _20px);
+                        cs.connect(titleView.getId(), ConstraintSet.BOTTOM, ConstraintSet.PARENT_ID, ConstraintSet.BOTTOM, _20px);
+                        cs.applyTo(courseLayout);
+
+                        titleView.setText(courseLayout.getCourseId());
+                        titleView.setTextSize(TypedValue.COMPLEX_UNIT_PX, _20px);
+                        titleView.setTextColor(getResources().getColor(R.color.light_blue3));
+                        titleView.setMaxLines(2);
+                    }
+                }
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                if(databaseError!=null) showAlert("Error", databaseError.getMessage());
+                if(!isInternetAvailable()){}
+            }
+        });
+    }
 
     /* ----- OnClickListeners [ START ] ----- */
 
@@ -654,6 +748,11 @@ public class ClientActivity extends AppCompatActivity { // Ангел
     }
 
     //Utility
+    @Override
+    public void onBackPressed() { // block finish()
+        moveTaskToBack(true);
+    }
+
     private boolean isInternetAvailable() {
         ConnectivityManager cm = (ConnectivityManager)this.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
