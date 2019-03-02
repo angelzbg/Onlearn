@@ -488,6 +488,8 @@ public class ClientActivity extends AppCompatActivity { // Ангел
             }
         });
 
+        findViewById(R.id.client_LL_All).setMinimumHeight(height); // ако потребителят е записал първите 10 изттеглени или поне повечето от тях, лейаута ще е с малка височина и няма да можем да скролнем надолу -> логиката за теглене на по-нататъчни дисциплини умира -> това е fix
+
         // -------------------- Swipe Logic
         // ----- ALL/COURSES
         findViewById(R.id.client_SV_All).setOnTouchListener(new OnSwipeTouchListener(ClientActivity.this) { // в courses/all
