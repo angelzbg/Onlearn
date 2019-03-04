@@ -55,7 +55,8 @@
             android:id="@+id/course_TV_desc"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Course name" />
+            android:text="Description"
+            />
 
         <TextView
             android:id="@+id/course_TV_lectureName"
