@@ -114,7 +114,7 @@ public class CourseActivity extends AppCompatActivity { // Даниел
 
         final Intent intent=getIntent();
 
-        String courseId =intent.getStringExtra("courseId");
+        final String courseId =intent.getStringExtra("courseId");
         String description=intent.getStringExtra("description");
         String lecturerId=intent.getStringExtra("lecturerId");
 
@@ -153,13 +153,13 @@ public class CourseActivity extends AppCompatActivity { // Даниел
         query1.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                String groupName = dataSnapshot.getKey();
-                int currentNumber= dataSnapshot.child("current").getValue(Integer.class);
-                int max= dataSnapshot.child("max").getValue(Integer.class);
+                final String groupName = dataSnapshot.getKey();
+                final int currentNumber= dataSnapshot.child("current").getValue(Integer.class);
+                final int max= dataSnapshot.child("max").getValue(Integer.class);
                 Long start=dataSnapshot.child("start").getValue(Long.class);
                 Long end=dataSnapshot.child("end").getValue(Long.class);
 
-                ConstraintLayout groupLayout =  new ConstraintLayout(getApplicationContext());
+                final ConstraintLayout groupLayout =  new ConstraintLayout(getApplicationContext());
                 groupLayout.setId(View.generateViewId());
                 groupLayout.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
                 groups.addView(groupLayout);
@@ -243,6 +243,27 @@ public class CourseActivity extends AppCompatActivity { // Даниел
                     groupLayout.addView(fullBtn);
                 }
 
+               joinBtn.setOnClickListener(new View.OnClickListener() {
+                   @Override
+                   public void onClick(View v) {
+                       dbRefParticipation.child(courseId).child(user.getUid()).setValue(groupName, new DatabaseReference.CompletionListener() {
+                           @Override
+                           public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
+                               if(databaseError!=null){
+                                   final Intent intent=getIntent();
+
+                                   String courseId =intent.getStringExtra("courseId");
+                                   String description=intent.getStringExtra("description");
+                                   String lecturerId=intent.getStringExtra("lecturerId");
+                               }
+                               else{
+                                   finish();
+                               }
+                           }
+                       });
+                   }
+               });
+
                 startDate.setTextSize(TypedValue.COMPLEX_UNIT_PX, height/40);
                 startDate.setTextColor(getResources().getColor(R.color.light_blue3));
                 startDate.setMaxLines(2);
@@ -250,14 +271,6 @@ public class CourseActivity extends AppCompatActivity { // Даниел
                 endDate.setTextSize(TypedValue.COMPLEX_UNIT_PX, height/40);
                 endDate.setTextColor(getResources().getColor(R.color.light_blue3));
                 endDate.setMaxLines(2);
-
-
-                joinBtn.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-
-                    }
-                });
 
 
                 ConstraintSet cs = new ConstraintSet();
