@@ -1,5 +1,6 @@
 package angelzani.onlearn;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -176,7 +177,7 @@ public class CourseActivity extends AppCompatActivity { // Даниел
                 groupNameTV.setTextColor(getResources().getColor(R.color.light_blue3));
                 groupNameTV.setMaxLines(2);
 
-                TextView members=new TextView(getApplicationContext());
+                final TextView members=new TextView(getApplicationContext());
                 members.setId(View.generateViewId());
                 groupLayout.addView(members);
 
@@ -221,7 +222,7 @@ public class CourseActivity extends AppCompatActivity { // Даниел
                 endDate.setText("End date:    "+endDayOfYear+"/"+endMouth+"/"+endYear);
 
 
-                    Button joinBtn = new Button(getApplicationContext());
+                    final Button joinBtn = new Button(getApplicationContext());
                     joinBtn.setId(View.generateViewId());
                     joinBtn.setText("JOIN");
                     joinBtn.setBackgroundColor(Color.parseColor("#00ff00"));
@@ -229,7 +230,7 @@ public class CourseActivity extends AppCompatActivity { // Даниел
                     joinBtn.setTextSize(TypedValue.COMPLEX_UNIT_PX, height/30);
 
 
-                    Button fullBtn =new Button(getApplicationContext());
+                    final Button fullBtn =new Button(getApplicationContext());
                     fullBtn.setId(View.generateViewId());
                     fullBtn.setText("FULL");
                     fullBtn.setBackgroundColor(Color.parseColor("#ff0000"));
@@ -249,15 +250,20 @@ public class CourseActivity extends AppCompatActivity { // Даниел
                        dbRefParticipation.child(courseId).child(user.getUid()).setValue(groupName, new DatabaseReference.CompletionListener() {
                            @Override
                            public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
-                               if(databaseError!=null){
-                                   final Intent intent=getIntent();
-
-                                   String courseId =intent.getStringExtra("courseId");
-                                   String description=intent.getStringExtra("description");
-                                   String lecturerId=intent.getStringExtra("lecturerId");
+                               if(databaseError == null){ // няма грешки -> успешен запис
+                                   // Да върнем в ClientActivity отговор, че сме записали дисциплина
+                                   Intent returnIntent = new Intent();
+                                   returnIntent.putExtra("courseId",courseId);
+                                   returnIntent.putExtra("groupId",groupName);
+                                   setResult(Activity.RESULT_OK, returnIntent);
+                                   finish();
                                }
                                else{
-                                   finish();
+                                   Toast.makeText(getApplicationContext(), "It seems that this group is already full.", Toast.LENGTH_SHORT).show();
+                                   // Да направим обновление:
+                                   groupLayout.removeView(joinBtn);
+                                   groupLayout.addView(fullBtn);
+                                   members.setText("      "+max + "/" + max);
                                }
                            }
                        });

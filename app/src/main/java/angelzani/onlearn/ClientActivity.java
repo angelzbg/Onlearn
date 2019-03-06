@@ -27,6 +27,7 @@ import android.support.constraint.ConstraintSet;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.Display;
 import android.view.MotionEvent;
@@ -351,12 +352,16 @@ public class ClientActivity extends AppCompatActivity { // Ангел
         loadCourses();
 
         // ----- Зареждаме в ONGOING || ENDED
+        //dbRefParticipation.orderByChild(user.getUid()) < - тегли абсолютно всички... трябва ми само тези, които съдържат child user.getUid...
         dbRefParticipation.orderByChild(user.getUid()).addChildEventListener(new ChildEventListener(){
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
 
                 final String courseId = dataSnapshot.getKey();
                 final String groupId = dataSnapshot.child(user.getUid()).getValue(String.class);
+                if(groupId == null) { // потребителят не е записан в тази дисциплина
+                    return;
+                }
 
                 for(int i=0; i<courses.size(); i++) {
                     if(courses.get(i).getCourseId().equals(courseId)) { // вече го имаме зареден от dbRefCourse.orderByKey().startAt(last_courseId_loaded).limitToFirst(10).addChildEventListener
@@ -374,6 +379,7 @@ public class ClientActivity extends AppCompatActivity { // Ангел
                             }
                         });
 
+                        Log.e("tag", "dbRefGroups.child(\"" + courseLayout.getCourseId() + "\").child(\"" + groupId + "\").child(\"end\")");
                         dbRefGroups.child(courseLayout.getCourseId()).child(groupId).child("end").addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -583,7 +589,6 @@ public class ClientActivity extends AppCompatActivity { // Ангел
 
     }// end of InitializeUI()
     private ArrayList<CLCourse> courses = new ArrayList<CLCourse>();
-    private ArrayList<CLCourse> course_ongoing_ended = new ArrayList<CLCourse>();
     private String last_courseId_loaded = " ";
     private GradientDrawable gradientDrawableBackgroundCourses;
 
@@ -622,7 +627,7 @@ public class ClientActivity extends AppCompatActivity { // Ангел
                                 intent.putExtra("courseId", courseLayout.getCourseId());
                                 intent.putExtra("description", courseLayout.getDescription());
                                 intent.putExtra("lecturerId", courseLayout.getLecturerId());
-                                startActivity(intent);
+                                startActivityForResult(intent, 1);
                             }
                         });
 
@@ -662,6 +667,114 @@ public class ClientActivity extends AppCompatActivity { // Ангел
             }
         });
     }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) { // потребителя е записал група в дисциплината, в която сме го закарали (CourseActivity)
+        if (requestCode == 1) {
+            if(resultCode == Activity.RESULT_OK){
+                final String courseId = data.getStringExtra("courseId");
+                final String groupId = data.getStringExtra("groupId");
+
+                // --
+                for(int i=0; i<courses.size(); i++) {
+                    if(courses.get(i).getCourseId().equals(courseId)) { // вече го имаме зареден от dbRefCourse.orderByKey().startAt(last_courseId_loaded).limitToFirst(10).addChildEventListener
+
+                        final CLCourse courseLayout = courses.get(i);
+                        courseLayout.setOnClickListener(new View.OnClickListener() { // ще променим кликъра да не тегли излишно от датабазата (знаем че е записан)
+                            @Override
+                            public void onClick(View v) {
+                                Intent intent = new Intent(ClientActivity.this, SignedCourseActivity.class);
+                                intent.putExtra("courseId", courseLayout.getCourseId());
+                                intent.putExtra("description", courseLayout.getDescription());
+                                intent.putExtra("lecturerId", courseLayout.getLecturerId());
+                                intent.putExtra("groupId", groupId);
+                                startActivity(intent);
+                            }
+                        });
+
+                        Log.e("tag", "dbRefGroups.child(\"" + courseLayout.getCourseId() + "\").child(\"" + groupId + "\").child(\"end\")");
+                        dbRefGroups.child(courseLayout.getCourseId()).child(groupId).child("end").addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                ((ViewManager) courseLayout.getParent()).removeView(courseLayout);
+                                if (dataSnapshot.getValue(Long.class) > System.currentTimeMillis()) { // отива в ONGOING
+                                    ((LinearLayout) findViewById(R.id.client_LL_Ongoing)).addView(courseLayout);
+                                } else { // отива в ENDED
+                                    ((LinearLayout) findViewById(R.id.client_LL_Ended)).addView(courseLayout);
+                                }
+                            }
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) { }
+                        });
+
+                        return; // излизаме от onActivityResult()
+                    }
+                }
+
+                //щом не сме return-али -> трябва да добавим дисциплината в лейаутите
+                dbRefCourse.child(courseId).addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        final CLCourse courseLayout = new CLCourse(getApplicationContext(), courseId, dataSnapshot.child("descr").getValue(String.class), dataSnapshot.child("lect").getValue(String.class));
+                        courseLayout.setId(View.generateViewId());
+                        courseLayout.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+                        courses.add(courseLayout);
+
+                        ((ViewManager) courseLayout.getParent()).removeView(courseLayout);
+                        ((LinearLayout) findViewById(R.id.client_LL_Ongoing)).addView(courseLayout); // отива в ongoing задължително
+
+                        courseLayout.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                Intent intent = new Intent(ClientActivity.this, SignedCourseActivity.class);
+                                intent.putExtra("courseId", courseLayout.getCourseId());
+                                intent.putExtra("description", courseLayout.getDescription());
+                                intent.putExtra("lecturerId", courseLayout.getLecturerId());
+                                intent.putExtra("groupId", groupId);
+                                startActivity(intent);
+                            }
+                        });
+
+                        final int _20px = height/40;
+                        setMargins(courseLayout, _20px, _20px, _20px, _20px / 8);
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                            courseLayout.setElevation(_20px / 10);
+                        } else {
+                            gradientDrawableBackgroundCourses.setStroke(1, Color.parseColor("#000000"));
+                        }
+                        courseLayout.setBackground(gradientDrawableBackgroundCourses);
+
+                        TextView titleView = new TextView(getApplicationContext());
+                        titleView.setId(View.generateViewId());
+                        courseLayout.addView(titleView);
+
+                        ConstraintSet cs = new ConstraintSet();
+                        cs.clone(courseLayout);
+                        cs.connect(titleView.getId(), ConstraintSet.START, ConstraintSet.PARENT_ID, ConstraintSet.START, _20px);
+                        cs.connect(titleView.getId(), ConstraintSet.TOP, ConstraintSet.PARENT_ID, ConstraintSet.TOP, _20px);
+                        cs.connect(titleView.getId(), ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END, _20px);
+                        cs.connect(titleView.getId(), ConstraintSet.BOTTOM, ConstraintSet.PARENT_ID, ConstraintSet.BOTTOM, _20px);
+                        cs.applyTo(courseLayout);
+
+                        titleView.setText(courseLayout.getCourseId());
+                        titleView.setTextSize(TypedValue.COMPLEX_UNIT_PX, _20px);
+                        titleView.setTextColor(getResources().getColor(R.color.light_blue3));
+                        titleView.setMaxLines(2);
+                    }
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                        if(!isInternetAvailable()) {}
+                        showAlert("Error", databaseError.getMessage());
+                    }
+                });
+                // --
+
+            }
+            if (resultCode == Activity.RESULT_CANCELED) {
+                //Write your code if there's no result
+            }
+        }
+    }//onActivityResult
 
     /* ----- OnClickListeners [ START ] ----- */
 
