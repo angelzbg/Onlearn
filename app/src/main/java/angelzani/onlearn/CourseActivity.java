@@ -128,12 +128,6 @@ public class CourseActivity extends AppCompatActivity { // Даниел
         final String k="<b><i><font color='#2676FF'>@</font></b>";
 
 
-
-
-
-
-
-
         courseName.setText(courseId);
         desc.setText(Html.fromHtml(d+description));
 
@@ -205,12 +199,17 @@ public class CourseActivity extends AppCompatActivity { // Даниел
 
 
 
-                if(currentNumber<10) {
+                if(currentNumber<10&&max>9) {
                     members.setText("        "+currentNumber + "/" + max);
                 }
-                else{
+                else if(currentNumber<10&&max<10){
+                    members.setText("        "+currentNumber + "/" + max+" ");
+                }
+                else {
                     members.setText("      "+currentNumber + "/" + max);
                 }
+
+
                 if(currentNumber==max){
                     members.setTextColor(Color.parseColor("#D42121"));
                 }
