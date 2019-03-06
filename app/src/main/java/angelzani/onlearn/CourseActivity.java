@@ -197,6 +197,9 @@ public class CourseActivity extends AppCompatActivity { // Даниел
                 else{
                     members.setText("      "+currentNumber + "/" + max);
                 }
+                if(currentNumber==max){
+                    members.setTextColor(Color.parseColor("#D42121"));
+                }
                 Date startDateTime = new Date(start);
                 Date endDateTime=new Date(end);
 
@@ -243,13 +246,17 @@ public class CourseActivity extends AppCompatActivity { // Даниел
 
 
 
-
                 final Button fullBtn =new Button(getApplicationContext());
                     fullBtn.setId(View.generateViewId());
                     fullBtn.setText("FULL");
-                    fullBtn.setBackgroundColor(Color.parseColor("#ff0000"));
                     fullBtn.setTextColor(Color.parseColor("#ffffff"));
                     fullBtn.setTextSize(TypedValue.COMPLEX_UNIT_PX, height/28);
+
+                    fullBtn.setBackgroundResource(R.drawable.btnfull);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                    joinBtn.setOutlineSpotShadowColor(Color.parseColor("#A359A8"));
+                }
+                joinBtn.setShadowLayer(height/100,8,8,Color.parseColor("#738AFF"));
 
                 if(currentNumber<max){
                     groupLayout.addView(joinBtn);
