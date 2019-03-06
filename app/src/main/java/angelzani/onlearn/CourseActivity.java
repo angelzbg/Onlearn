@@ -16,6 +16,7 @@ import android.support.constraint.ConstraintLayout;
 import android.support.constraint.ConstraintSet;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.Html;
 import android.util.TypedValue;
 import android.view.Display;
 import android.view.View;
@@ -120,15 +121,28 @@ public class CourseActivity extends AppCompatActivity { // Даниел
         String description=intent.getStringExtra("description");
         String lecturerId=intent.getStringExtra("lecturerId");
 
+
+        final String d="<i><font color='#2676FF'>DESCRIPTION:  </font></i>";
+        final String l="<i><font color='#2676FF'>LECTURE:  </font></i>";
+        final String e="<i><font color='#2676FF'> EMAIL: </font>";
+        final String k="<b><i><font color='#2676FF'>@</font></b>";
+
+
+
+
+
+
+
+
         courseName.setText(courseId);
-        desc.setText("Description:  "+description);
+        desc.setText(Html.fromHtml(d+description));
 
 
         dbRefUsers.child(lecturerId).child("name").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 String name = dataSnapshot.getValue(String.class);
-                lectureName.setText("Lecturer:  "+name);
+                lectureName.setText(Html.fromHtml(l+name));
             }
 
             @Override
@@ -141,7 +155,7 @@ public class CourseActivity extends AppCompatActivity { // Даниел
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 String email = dataSnapshot.getValue(String.class);
-                lectureEmail.setText("@ Email:   "+email);
+                lectureEmail.setText(Html.fromHtml(k+e+email));
             }
 
             @Override
@@ -174,8 +188,8 @@ public class CourseActivity extends AppCompatActivity { // Даниел
                 groupLayout.addView(groupNameTV);
                 groupNameTV.setText(groupName);
 
-                groupNameTV.setTextSize(TypedValue.COMPLEX_UNIT_PX, height/40);
-                groupNameTV.setTextColor(getResources().getColor(R.color.light_blue3));
+                groupNameTV.setTextSize(TypedValue.COMPLEX_UNIT_PX, height/37);
+                groupNameTV.setTextColor(Color.parseColor("#2676FF"));
                 groupNameTV.setMaxLines(2);
 
                 final TextView members=new TextView(getApplicationContext());
@@ -184,8 +198,8 @@ public class CourseActivity extends AppCompatActivity { // Даниел
 
 
                 members.setTextSize(TypedValue.COMPLEX_UNIT_PX, height/36);
-                members.setTextColor(getResources().getColor(R.color.light_blue3));
-                members.setMaxLines(2);
+                members.setTextColor(Color.parseColor("#2676FF"));
+
 
 
 
@@ -219,14 +233,19 @@ public class CourseActivity extends AppCompatActivity { // Даниел
                 startDate.setId(View.generateViewId());
                 groupLayout.addView(startDate);
                 startDate.setText("Start date:  "+startDayOfYear+"/"+startMouth+"/"+startYear);
+                startDate.setTextSize(TypedValue.COMPLEX_UNIT_PX, height/38);
+                startDate.setTextColor(getResources().getColor(R.color.light_blue3));
 
                 TextView endDate=new TextView(getApplicationContext());
                 endDate.setId(View.generateViewId());
                 groupLayout.addView(endDate);
                 endDate.setText("End date:    "+endDayOfYear+"/"+endMouth+"/"+endYear);
+                endDate.setTextSize(TypedValue.COMPLEX_UNIT_PX, height/38);
+                endDate.setTextColor(getResources().getColor(R.color.light_blue3));
 
 
-                    final Button joinBtn = new Button(getApplicationContext());
+
+                final Button joinBtn = new Button(getApplicationContext());
                     joinBtn.setId(View.generateViewId());
                     joinBtn.setText("JOIN");
                     joinBtn.setTextColor(Color.parseColor("#ffffff"));
@@ -291,13 +310,6 @@ public class CourseActivity extends AppCompatActivity { // Даниел
                    }
                });
 
-                startDate.setTextSize(TypedValue.COMPLEX_UNIT_PX, height/40);
-                startDate.setTextColor(getResources().getColor(R.color.light_blue3));
-                startDate.setMaxLines(2);
-
-                endDate.setTextSize(TypedValue.COMPLEX_UNIT_PX, height/40);
-                endDate.setTextColor(getResources().getColor(R.color.light_blue3));
-                endDate.setMaxLines(2);
 
 
                 ConstraintSet cs = new ConstraintSet();
