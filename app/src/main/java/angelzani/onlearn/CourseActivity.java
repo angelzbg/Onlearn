@@ -203,7 +203,7 @@ public class CourseActivity extends AppCompatActivity { // Даниел
                     members.setText("        "+currentNumber + "/" + max);
                 }
                 else if(currentNumber<10&&max<10){
-                    members.setText("        "+currentNumber + "/" + max+" ");
+                    members.setText("        "+currentNumber + "/" + max+"  ");
                 }
                 else {
                     members.setText("      "+currentNumber + "/" + max);
