@@ -9,6 +9,7 @@ import android.graphics.drawable.GradientDrawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
+import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
@@ -225,17 +226,30 @@ public class CourseActivity extends AppCompatActivity { // Даниел
                     final Button joinBtn = new Button(getApplicationContext());
                     joinBtn.setId(View.generateViewId());
                     joinBtn.setText("JOIN");
-                    joinBtn.setBackgroundColor(Color.parseColor("#00ff00"));
                     joinBtn.setTextColor(Color.parseColor("#ffffff"));
-                    joinBtn.setTextSize(TypedValue.COMPLEX_UNIT_PX, height/30);
+                    joinBtn.setTextSize(TypedValue.COMPLEX_UNIT_PX, height/28);
 
 
-                    final Button fullBtn =new Button(getApplicationContext());
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    groupLayout.setElevation(height/80);
+                }
+                joinBtn.setBackgroundResource(R.drawable.btnjoin);
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                    joinBtn.setOutlineSpotShadowColor(Color.parseColor("#A359A8"));
+                }
+                joinBtn.setShadowLayer(height/100,8,8,Color.parseColor("#738AFF"));
+
+
+
+
+                final Button fullBtn =new Button(getApplicationContext());
                     fullBtn.setId(View.generateViewId());
                     fullBtn.setText("FULL");
                     fullBtn.setBackgroundColor(Color.parseColor("#ff0000"));
                     fullBtn.setTextColor(Color.parseColor("#ffffff"));
-                    fullBtn.setTextSize(TypedValue.COMPLEX_UNIT_PX, height/30);
+                    fullBtn.setTextSize(TypedValue.COMPLEX_UNIT_PX, height/28);
 
                 if(currentNumber<max){
                     groupLayout.addView(joinBtn);
