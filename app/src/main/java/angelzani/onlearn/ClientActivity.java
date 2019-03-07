@@ -361,111 +361,109 @@ public class ClientActivity extends AppCompatActivity { // Ангел
 
                 final String courseId = dataSnapshot.getKey();
                 final String groupId = dataSnapshot.child(user.getUid()).getValue(String.class);
-                if(groupId == null) { // потребителят не е записан в тази дисциплина
-                    return;
-                }
+                if(groupId != null) { // потребителят е записан в тази дисциплина
+                    for(int i=0; i<courses.size(); i++) {
+                        if(courses.get(i).getCourseId().equals(courseId)) { // вече го имаме зареден от dbRefCourse.orderByKey().startAt(last_courseId_loaded).limitToFirst(10).addChildEventListener
 
-                for(int i=0; i<courses.size(); i++) {
-                    if(courses.get(i).getCourseId().equals(courseId)) { // вече го имаме зареден от dbRefCourse.orderByKey().startAt(last_courseId_loaded).limitToFirst(10).addChildEventListener
-
-                        final CLCourse courseLayout = courses.get(i);
-                        courseLayout.setOnClickListener(new View.OnClickListener() { // ще променим кликъра да не тегли излишно от датабазата (знаем че е записан)
-                            @Override
-                            public void onClick(View v) {
-                                Intent intent = new Intent(ClientActivity.this, SignedCourseActivity.class);
-                                intent.putExtra("courseId", courseLayout.getCourseId());
-                                intent.putExtra("description", courseLayout.getDescription());
-                                intent.putExtra("lecturerId", courseLayout.getLecturerId());
-                                intent.putExtra("groupId", groupId);
-                                startActivity(intent);
-                            }
-                        });
-
-                        Log.e("tag", "dbRefGroups.child(\"" + courseLayout.getCourseId() + "\").child(\"" + groupId + "\").child(\"end\")");
-                        dbRefGroups.child(courseLayout.getCourseId()).child(groupId).child("end").addListenerForSingleValueEvent(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                ((ViewManager) courseLayout.getParent()).removeView(courseLayout);
-                                if (dataSnapshot.getValue(Long.class) > System.currentTimeMillis()) { // отива в ONGOING
-                                    ((LinearLayout) findViewById(R.id.client_LL_Ongoing)).addView(courseLayout);
-                                } else { // отива в ENDED
-                                    ((LinearLayout) findViewById(R.id.client_LL_Ended)).addView(courseLayout);
+                            final CLCourse courseLayout = courses.get(i);
+                            courseLayout.setOnClickListener(new View.OnClickListener() { // ще променим кликъра да не тегли излишно от датабазата (знаем че е записан)
+                                @Override
+                                public void onClick(View v) {
+                                    Intent intent = new Intent(ClientActivity.this, SignedCourseActivity.class);
+                                    intent.putExtra("courseId", courseLayout.getCourseId());
+                                    intent.putExtra("description", courseLayout.getDescription());
+                                    intent.putExtra("lecturerId", courseLayout.getLecturerId());
+                                    intent.putExtra("groupId", groupId);
+                                    startActivity(intent);
                                 }
-                            }
-                            @Override
-                            public void onCancelled(@NonNull DatabaseError databaseError) { }
-                        });
+                            });
 
-                        return; // излизаме от onChildAdded()
-                    }
-                }
-
-                //щом не сме return-али -> трябва да добавим дисциплината в лейаутите
-                dbRefCourse.child(courseId).addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        final CLCourse courseLayout = new CLCourse(getApplicationContext(), courseId, dataSnapshot.child("descr").getValue(String.class), dataSnapshot.child("lect").getValue(String.class));
-                        courseLayout.setId(View.generateViewId());
-                        courseLayout.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
-                        courses.add(courseLayout);
-
-                        dbRefGroups.child(courseLayout.getCourseId()).child(groupId).child("end").addListenerForSingleValueEvent(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                ((ViewManager) courseLayout.getParent()).removeView(courseLayout);
-                                if (dataSnapshot.getValue(Long.class) > System.currentTimeMillis()) { // отива в ONGOING
-                                    ((LinearLayout) findViewById(R.id.client_LL_Ongoing)).addView(courseLayout);
-                                } else { // отива в ENDED
-                                    ((LinearLayout) findViewById(R.id.client_LL_Ended)).addView(courseLayout);
+                            Log.e("tag", "dbRefGroups.child(\"" + courseLayout.getCourseId() + "\").child(\"" + groupId + "\").child(\"end\")");
+                            dbRefGroups.child(courseLayout.getCourseId()).child(groupId).child("end").addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                    ((ViewManager) courseLayout.getParent()).removeView(courseLayout);
+                                    if (dataSnapshot.getValue(Long.class) > System.currentTimeMillis()) { // отива в ONGOING
+                                        ((LinearLayout) findViewById(R.id.client_LL_Ongoing)).addView(courseLayout);
+                                    } else { // отива в ENDED
+                                        ((LinearLayout) findViewById(R.id.client_LL_Ended)).addView(courseLayout);
+                                    }
                                 }
-                            }
-                            @Override
-                            public void onCancelled(@NonNull DatabaseError databaseError) { }
-                        });
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError databaseError) { }
+                            });
 
-                        courseLayout.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                Intent intent = new Intent(ClientActivity.this, SignedCourseActivity.class);
-                                intent.putExtra("courseId", courseLayout.getCourseId());
-                                intent.putExtra("description", courseLayout.getDescription());
-                                intent.putExtra("lecturerId", courseLayout.getLecturerId());
-                                intent.putExtra("groupId", groupId);
-                                startActivity(intent);
-                            }
-                        });
-
-                        setMargins(courseLayout, _20px, _20px, _20px, _20px / 8);
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                            courseLayout.setElevation(_20px / 10);
-                        } else {
-                            gradientDrawableBackgroundCourses.setStroke(1, Color.parseColor("#000000"));
+                            return; // излизаме от onChildAdded()
                         }
-                        courseLayout.setBackground(gradientDrawableBackgroundCourses);
-
-                        TextView titleView = new TextView(getApplicationContext());
-                        titleView.setId(View.generateViewId());
-                        courseLayout.addView(titleView);
-
-                        ConstraintSet cs = new ConstraintSet();
-                        cs.clone(courseLayout);
-                        cs.connect(titleView.getId(), ConstraintSet.START, ConstraintSet.PARENT_ID, ConstraintSet.START, _20px);
-                        cs.connect(titleView.getId(), ConstraintSet.TOP, ConstraintSet.PARENT_ID, ConstraintSet.TOP, _20px);
-                        cs.connect(titleView.getId(), ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END, _20px);
-                        cs.connect(titleView.getId(), ConstraintSet.BOTTOM, ConstraintSet.PARENT_ID, ConstraintSet.BOTTOM, _20px);
-                        cs.applyTo(courseLayout);
-
-                        titleView.setText(courseLayout.getCourseId());
-                        titleView.setTextSize(TypedValue.COMPLEX_UNIT_PX, _20px);
-                        titleView.setTextColor(getResources().getColor(R.color.light_blue3));
-                        titleView.setMaxLines(2);
                     }
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-                        if(!isInternetAvailable()) {}
-                        showAlert("Error", databaseError.getMessage());
-                    }
-                });
+
+                    //щом не сме return-али -> трябва да добавим дисциплината в лейаутите
+                    dbRefCourse.child(courseId).addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            final CLCourse courseLayout = new CLCourse(getApplicationContext(), courseId, dataSnapshot.child("descr").getValue(String.class), dataSnapshot.child("lect").getValue(String.class));
+                            courseLayout.setId(View.generateViewId());
+                            courseLayout.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+
+                            dbRefGroups.child(courseLayout.getCourseId()).child(groupId).child("end").addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                    if (dataSnapshot.getValue(Long.class) > System.currentTimeMillis()) { // отива в ONGOING
+                                        ((LinearLayout) findViewById(R.id.client_LL_Ongoing)).addView(courseLayout);
+                                    } else { // отива в ENDED
+                                        ((LinearLayout) findViewById(R.id.client_LL_Ended)).addView(courseLayout);
+                                    }
+                                }
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError databaseError) { }
+                            });
+
+                            courseLayout.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    Intent intent = new Intent(ClientActivity.this, SignedCourseActivity.class);
+                                    intent.putExtra("courseId", courseLayout.getCourseId());
+                                    intent.putExtra("description", courseLayout.getDescription());
+                                    intent.putExtra("lecturerId", courseLayout.getLecturerId());
+                                    intent.putExtra("groupId", groupId);
+                                    startActivity(intent);
+                                }
+                            });
+
+                            setMargins(courseLayout, _20px, _20px, _20px, _20px / 8);
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                                courseLayout.setElevation(_20px / 10);
+                            } else {
+                                gradientDrawableBackgroundCourses.setStroke(1, Color.parseColor("#000000"));
+                            }
+                            courseLayout.setBackground(gradientDrawableBackgroundCourses);
+
+                            TextView titleView = new TextView(getApplicationContext());
+                            titleView.setId(View.generateViewId());
+                            courseLayout.addView(titleView);
+
+                            ConstraintSet cs = new ConstraintSet();
+                            cs.clone(courseLayout);
+                            cs.connect(titleView.getId(), ConstraintSet.START, ConstraintSet.PARENT_ID, ConstraintSet.START, _20px);
+                            cs.connect(titleView.getId(), ConstraintSet.TOP, ConstraintSet.PARENT_ID, ConstraintSet.TOP, _20px);
+                            cs.connect(titleView.getId(), ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END, _20px);
+                            cs.connect(titleView.getId(), ConstraintSet.BOTTOM, ConstraintSet.PARENT_ID, ConstraintSet.BOTTOM, _20px);
+                            cs.applyTo(courseLayout);
+
+                            titleView.setText(courseLayout.getCourseId());
+                            titleView.setTextSize(TypedValue.COMPLEX_UNIT_PX, _20px);
+                            titleView.setTextColor(getResources().getColor(R.color.light_blue3));
+                            titleView.setMaxLines(2);
+
+                            courses.add(courseLayout);
+                        }
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+                            if(!isInternetAvailable()) {}
+                            showAlert("Error", databaseError.getMessage());
+                        }
+                    });
+                }
 
             }
             @Override

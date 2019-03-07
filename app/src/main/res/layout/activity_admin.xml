@@ -245,6 +245,14 @@
 
                 </android.support.constraint.ConstraintLayout>
 
+                <View
+                    android:id="@+id/admin_V_SeparatorBlegh"
+                    android:layout_width="match_parent"
+                    android:layout_height="1px"
+                    android:layout_marginStart="50dp"
+                    android:layout_marginEnd="50dp"
+                    android:background="@color/light_blue2" />
+
                 <LinearLayout
                     android:id="@+id/admin_LL_groups"
                     android:layout_width="match_parent"
