@@ -425,7 +425,6 @@ public class AdminActivity extends AppCompatActivity { // Ани
                 maxTV.setTextSize(TypedValue.COMPLEX_UNIT_PX, _20px);
                 maxTV.setTextColor(Color.BLACK);
 
-
                 final TextView buttonSave = new TextView(getApplicationContext());
                 buttonSave.setId(View.generateViewId());
                 groupLayout.addView(buttonSave);
