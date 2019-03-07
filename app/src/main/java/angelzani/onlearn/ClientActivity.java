@@ -220,9 +220,11 @@ public class ClientActivity extends AppCompatActivity { // Ангел
                         final LinearLayout client_LL_SearchResult = findViewById(R.id.client_LL_SearchResult);
                         client_LL_SearchResult.removeAllViews();
 
+                        showProgress();
                         dbRefCourse.orderByKey().startAt(searchString).endAt(searchString + "\uf8ff").addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot DATA) {
+                                hideProgress();
                                 for(DataSnapshot dataSnapshot : DATA.getChildren()) {
                                     final GradientDrawable gradientDrawableBackgroundCourses = new GradientDrawable();
                                     gradientDrawableBackgroundCourses.setColor(Color.parseColor("#ffffff"));
