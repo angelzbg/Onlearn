@@ -304,10 +304,10 @@ public class CourseActivity extends AppCompatActivity { // Даниел
                                    groupLayout.removeView(joinBtn);
                                    groupLayout.addView(fullBtn);
                                    if(max<10){
-                                       members.setText("        "+currentNumber + "/" + max+"  ");
+                                       members.setText("        "+max + "/" + max+"  ");
                                    }
                                    else{
-                                       members.setText("      "+currentNumber + "/" + max);
+                                       members.setText("      "+max + "/" + max);
                                    }
                                    members.setTextColor(Color.parseColor("#D42121"));
                                }
