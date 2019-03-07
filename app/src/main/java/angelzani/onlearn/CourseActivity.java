@@ -99,6 +99,7 @@ public class CourseActivity extends AppCompatActivity { // Даниел
         courseName.getLayoutParams().height=height/15;
         courseName.setTextSize(TypedValue.COMPLEX_UNIT_PX, height/30);
         courseName.setTextColor(getResources().getColor(R.color.white));
+        //courseName.setMaxLines(5);
 
         desc.setTextSize(TypedValue.COMPLEX_UNIT_PX, height/36);
         desc.setTextColor(getResources().getColor(R.color.light_blue3));
@@ -184,7 +185,7 @@ public class CourseActivity extends AppCompatActivity { // Даниел
 
                 groupNameTV.setTextSize(TypedValue.COMPLEX_UNIT_PX, height/37);
                 groupNameTV.setTextColor(Color.parseColor("#2676FF"));
-                groupNameTV.setMaxLines(2);
+               // groupNameTV.setMaxLines(3);
 
                 final TextView members=new TextView(getApplicationContext());
                 members.setId(View.generateViewId());
@@ -302,19 +303,26 @@ public class CourseActivity extends AppCompatActivity { // Даниел
                                    // Да направим обновление:
                                    groupLayout.removeView(joinBtn);
                                    groupLayout.addView(fullBtn);
-                                   members.setText("      "+max + "/" + max);
+                                   if(max<10){
+                                       members.setText("        "+currentNumber + "/" + max+"  ");
+                                   }
+                                   else{
+                                       members.setText("      "+currentNumber + "/" + max);
+                                   }
+                                   members.setTextColor(Color.parseColor("#D42121"));
                                }
                            }
                        });
                    }
                });
 
-
+                setMargins(groupLayout, width/26, height/70,width/26, height/70);
 
                 ConstraintSet cs = new ConstraintSet();
                 cs.clone(groupLayout);
                 cs.connect(groupNameTV.getId(), ConstraintSet.TOP, ConstraintSet.PARENT_ID, ConstraintSet.TOP);
                 cs.connect(groupNameTV.getId(), ConstraintSet.START, ConstraintSet.PARENT_ID, ConstraintSet.START);
+
 
                 cs.connect(startDate.getId(), ConstraintSet.TOP, groupNameTV.getId(), ConstraintSet.BOTTOM);
                 cs.connect(startDate.getId(), ConstraintSet.START, groupNameTV.getId(), ConstraintSet.START);
@@ -323,7 +331,7 @@ public class CourseActivity extends AppCompatActivity { // Даниел
                 cs.connect(endDate.getId(), ConstraintSet.START, startDate.getId(), ConstraintSet.START);
 
                 cs.connect(members.getId(), ConstraintSet.TOP, groupNameTV.getId(), ConstraintSet.TOP);
-                cs.connect(members.getId(), ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END, width/9);
+                cs.connect(members.getId(), ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END, width/14);
 
                 if(currentNumber<max){
                     cs.connect(joinBtn.getId(), ConstraintSet.TOP, members.getId(), ConstraintSet.BOTTOM);
