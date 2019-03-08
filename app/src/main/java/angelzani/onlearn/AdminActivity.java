@@ -31,6 +31,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.webkit.URLUtil;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -601,6 +602,137 @@ public class AdminActivity extends AppCompatActivity { // Ани
             }
         });
 
+        //clicker addMaterial
+        findViewById(R.id.admin_CL_buttonAddMaterial).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final ConstraintLayout materialLayout = new ConstraintLayout(getApplicationContext());
+                materialLayout.setId(View.generateViewId());
+                ((LinearLayout)findViewById(R.id.admin_LL_materials)).addView(materialLayout);
+
+                setMargins(materialLayout, _20px,_20px,_20px,_20px/4);
+                GradientDrawable gdBackground1 = new GradientDrawable();
+                gdBackground1.setColor(Color.parseColor("#ffffff"));
+                gdBackground1.setShape(GradientDrawable.RECTANGLE);
+                gdBackground1.setCornerRadius(_20px/2);
+                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
+                    materialLayout.setElevation(_20px/8);
+                } else {
+                    gdBackground1.setStroke(1, Color.parseColor("#000000"));
+                }
+                materialLayout.setBackground(gdBackground1);
+                materialLayout.setPadding(_20px/2,_20px/2,_20px/2,_20px/2);
+
+                final EditText nameET = new EditText(getApplicationContext());
+                nameET.setId(View.generateViewId());
+                nameET.setLayoutParams(new ViewGroup.LayoutParams(ConstraintLayout.LayoutParams.MATCH_CONSTRAINT, ViewGroup.LayoutParams.WRAP_CONTENT));
+                materialLayout.addView(nameET);
+                nameET.setTextSize(TypedValue.COMPLEX_UNIT_PX, _20px);
+                nameET.setHint("Material name");
+                nameET.setBackground(new ColorDrawable(getResources().getColor(R.color.transparent)));
+                nameET.setTextColor(Color.BLACK);
+                nameET.setHintTextColor(Color.LTGRAY);
+
+                final EditText urlET = new EditText(getApplicationContext());
+                urlET.setId(View.generateViewId());
+                urlET.setLayoutParams(new ViewGroup.LayoutParams(ConstraintLayout.LayoutParams.MATCH_CONSTRAINT, ViewGroup.LayoutParams.WRAP_CONTENT));
+                materialLayout.addView(urlET);
+                urlET.setTextSize(TypedValue.COMPLEX_UNIT_PX, _20px);
+                urlET.setHint("Material URL");
+                urlET.setBackground(new ColorDrawable(getResources().getColor(R.color.transparent)));
+                urlET.setTextColor(Color.BLACK);
+                urlET.setHintTextColor(Color.LTGRAY);
+
+                final TextView buttonSave = new TextView(getApplicationContext());
+                buttonSave.setId(View.generateViewId());
+                materialLayout.addView(buttonSave);
+                buttonSave.setText("SAVE");
+                buttonSave.setTextColor(Color.WHITE);
+                buttonSave.setTextSize(TypedValue.COMPLEX_UNIT_PX, _20px);
+                buttonSave.setPadding(_20px/2,_20px/4,_20px/2,_20px/4);
+                GradientDrawable gdBackground2 = new GradientDrawable();
+                gdBackground2.setColor(Color.parseColor("#00C853"));
+                gdBackground2.setStroke(1, Color.parseColor("#e0e0e0"));
+                gdBackground2.setShape(GradientDrawable.RECTANGLE);
+                gdBackground2.setCornerRadius(_20px/4);
+                buttonSave.setBackground(gdBackground2);
+
+                final ConstraintSet cs = new ConstraintSet();
+                cs.clone(materialLayout);
+                cs.connect(nameET.getId(), ConstraintSet.TOP, ConstraintSet.PARENT_ID, ConstraintSet.TOP);
+                cs.connect(nameET.getId(), ConstraintSet.START, ConstraintSet.PARENT_ID, ConstraintSet.START);
+                cs.connect(nameET.getId(), ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END);
+
+                cs.connect(urlET.getId(), ConstraintSet.TOP, nameET.getId(), ConstraintSet.BOTTOM, _20px/2);
+                cs.connect(urlET.getId(), ConstraintSet.START, ConstraintSet.PARENT_ID, ConstraintSet.START);
+                cs.connect(urlET.getId(), ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END);
+
+                cs.connect(buttonSave.getId(), ConstraintSet.TOP, urlET.getId(), ConstraintSet.BOTTOM, _20px/2);
+                cs.connect(buttonSave.getId(), ConstraintSet.START, ConstraintSet.PARENT_ID, ConstraintSet.START);
+                cs.connect(buttonSave.getId(), ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END);
+                cs.applyTo(materialLayout);
+
+                buttonSave.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        final String materialName = nameET.getText().toString().trim();
+                        String materialURL = urlET.getText().toString().toLowerCase().trim();
+
+                        if(materialName.isEmpty() || materialURL.isEmpty()) {
+                            Toast.makeText(getApplicationContext(), "All fields have to be filled.", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+
+                        if(!URLUtil.isValidUrl(materialURL)) {
+                            Toast.makeText(getApplicationContext(), "Invalid material URL.", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+
+                        String courseNAME = ((TextView)findViewById(R.id.admin_TV_addTitle)).getText().toString();
+                        buttonSave.setVisibility(View.INVISIBLE);
+                        dbRefMaterials.child(courseNAME).child(materialName).setValue(materialURL, new DatabaseReference.CompletionListener() {
+                            @Override
+                            public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
+                                if(databaseError!=null) {
+                                    Toast.makeText(getApplicationContext(), databaseError.getMessage(), Toast.LENGTH_LONG).show();
+                                    buttonSave.setVisibility(View.VISIBLE);
+                                } else {
+
+                                    TextView name = new TextView(getApplicationContext());
+                                    name.setId(View.generateViewId());
+                                    materialLayout.addView(name);
+                                    name.setTextSize(TypedValue.COMPLEX_UNIT_PX, _20px);;
+                                    name.setTextColor(Color.parseColor("#ff89e5"));
+                                    name.setShadowLayer(1.5f, -1, 1, Color.LTGRAY);
+                                    name.setText(materialName);
+
+                                    cs.clone(materialLayout);
+                                    cs.connect(name.getId(), ConstraintSet.TOP, ConstraintSet.PARENT_ID, ConstraintSet.TOP);
+                                    cs.connect(name.getId(), ConstraintSet.START, ConstraintSet.PARENT_ID, ConstraintSet.START);
+                                    cs.connect(name.getId(), ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END);
+                                    cs.connect(name.getId(), ConstraintSet.BOTTOM, ConstraintSet.PARENT_ID, ConstraintSet.BOTTOM);
+                                    cs.applyTo(materialLayout);
+
+                                    GradientDrawable gdBackground = new GradientDrawable(GradientDrawable.Orientation.BR_TL, new int[] {0xFFFFD76B,0xFFFFBC6A});
+                                    gdBackground.setShape(GradientDrawable.RECTANGLE);
+                                    gdBackground.setCornerRadius(_20px);
+                                    gdBackground.setStroke(1, Color.parseColor("#72A8FF"));
+                                    if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
+                                        materialLayout.setElevation(_20px/8);
+                                    }
+                                    materialLayout.setBackground(gdBackground);
+
+                                    buttonSave.setVisibility(View.GONE);
+                                    nameET.setVisibility(View.GONE);
+                                    urlET.setVisibility(View.GONE);
+                                }
+                            }
+                        });
+                    }
+                });
+            }
+        });
+
 
     }
                     /*-----END OF Initialize*/
@@ -717,6 +849,11 @@ public class AdminActivity extends AppCompatActivity { // Ани
     };
 
     //Utility
+    @Override
+    public void onBackPressed() { // block finish()
+        moveTaskToBack(true);
+    }
+
     private boolean isInternetAvailable() {
         ConnectivityManager cm = (ConnectivityManager)this.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
