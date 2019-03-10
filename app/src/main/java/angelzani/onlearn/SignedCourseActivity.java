@@ -11,6 +11,9 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -31,6 +34,59 @@ public class SignedCourseActivity extends AppCompatActivity { // Калофер
     private FirebaseUser user;
     private FirebaseDatabase mDatabase;
     private DatabaseReference mRef, dbRefUsers, dbRefCourse, dbRefGroups, dbRefParticipation, dbRefMaterials;
+    private Spinner spinner;
+    private static final String[] paths = {"item 1", "item 2", "item 3", "item4", "item5"};
+
+
+    }
+
+    Spinner sp;
+    String[] materials={"1-3седм","3-6седм","6-10седм"};
+@Override
+protected void onCreate(Bundle savedInstanceState){
+super.onCreate(savedInstanceState);
+setContentView(R.layout.activity_signed_course);
+sp=(Spinner) findViewById(R.id.sp);
+
+//Adapter
+ArrayAdapter<String> adapter = new ArrayAdapter<~>(this, android.R.layout.simple_list_item_1,materials);
+sp.setAdapter(adapter);
+
+//LISTENER
+sp.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener(){
+@Override
+public void onItemSelected(new AdapterView<?> adapterView, View view,int i,long l){
+Toast.makeText(SignedCourseActivity.this,materials[i],Toast.LENGTH_SHORT).show();
+}
+
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+
+    }
+
+    @Override
+public void onNothingSelected(AdapterView<?> adapterView) {
+
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -163,6 +219,7 @@ public class SignedCourseActivity extends AppCompatActivity { // Калофер
             public void onCancelled(@NonNull DatabaseError databaseError) {
                 Toast.makeText(getApplicationContext(), databaseError.getMessage(), Toast.LENGTH_LONG).show();
             }
+
         });
 
     }// края на onCreate()

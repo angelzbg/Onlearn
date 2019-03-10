@@ -1,9 +1,67 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".SignedCourseActivity">
+    android:background="@color/black"
+    android:orientation="vertical"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintTop_toTopOf="parent"
+    tools:layout_editor_absoluteX="0dp"
+    >
 
-</android.support.constraint.ConstraintLayout>
+
+    <Button
+        android:id="@+id/back_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/back_button"
+        tools:onclick="history.back()" />
+
+    <TextView
+        android:id="@+id/Discipline_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:text="@string/discipline_name"
+        android:textAlignment="center"
+        android:textColor="@color/betweenBackgroundAndWhite"
+        android:textIsSelectable="false"
+        android:textStyle="bold" />
+
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:scrollbars="vertical"
+        android:text="@string/discipline_info1"
+        android:textAlignment="center"
+        android:textColor="@color/betweenBackgroundAndWhite" />
+
+
+
+
+
+
+<Spinner
+    android:layout_marginTop="30dp"
+    android:id="@+id/sp"
+    android:text="Изберете материали"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"></Spinner>
+
+
+
+
+
+
+</LinearLayout>
+
+
+
+
+
+
