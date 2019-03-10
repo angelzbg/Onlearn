@@ -1,5 +1,6 @@
 package angelzani.onlearn;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -7,24 +8,24 @@ import android.graphics.Point;
 import android.graphics.drawable.GradientDrawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.provider.CalendarContract;
+
+import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.constraint.ConstraintSet;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.Html;
 import android.util.TypedValue;
 import android.view.Display;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
@@ -35,8 +36,10 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
+
 import java.util.Calendar;
 import java.util.Date;
+
 
 
 
@@ -96,6 +99,7 @@ public class CourseActivity extends AppCompatActivity { // Даниел
         courseName.getLayoutParams().height=height/15;
         courseName.setTextSize(TypedValue.COMPLEX_UNIT_PX, height/30);
         courseName.setTextColor(getResources().getColor(R.color.white));
+        //courseName.setMaxLines(5);
 
         desc.setTextSize(TypedValue.COMPLEX_UNIT_PX, height/36);
         desc.setTextColor(getResources().getColor(R.color.light_blue3));
@@ -114,19 +118,26 @@ public class CourseActivity extends AppCompatActivity { // Даниел
 
         final Intent intent=getIntent();
 
-        String courseId =intent.getStringExtra("courseId");
+        final String courseId =intent.getStringExtra("courseId");
         String description=intent.getStringExtra("description");
         String lecturerId=intent.getStringExtra("lecturerId");
 
+
+        final String d="<i><font color='#2676FF'>DESCRIPTION:  </font></i>";
+        final String l="<i><font color='#2676FF'>LECTURE:  </font></i>";
+        final String e="<i><font color='#2676FF'> EMAIL: </font>";
+        final String k="<b><i><font color='#2676FF'>@</font></b>";
+
+
         courseName.setText(courseId);
-        desc.setText("Description:  "+description);
+        desc.setText(Html.fromHtml(d+description));
 
 
         dbRefUsers.child(lecturerId).child("name").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 String name = dataSnapshot.getValue(String.class);
-                lectureName.setText("Lecturer:  "+name);
+                lectureName.setText(Html.fromHtml(l+name));
             }
 
             @Override
@@ -139,7 +150,7 @@ public class CourseActivity extends AppCompatActivity { // Даниел
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 String email = dataSnapshot.getValue(String.class);
-                lectureEmail.setText("@ Email:   "+email);
+                lectureEmail.setText(Html.fromHtml(k+e+email));
             }
 
             @Override
@@ -153,13 +164,13 @@ public class CourseActivity extends AppCompatActivity { // Даниел
         query1.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                String groupName = dataSnapshot.getKey();
-                int currentNumber= dataSnapshot.child("current").getValue(Integer.class);
-                int max= dataSnapshot.child("max").getValue(Integer.class);
+                final String groupName = dataSnapshot.getKey();
+                final int currentNumber= dataSnapshot.child("current").getValue(Integer.class);
+                final int max= dataSnapshot.child("max").getValue(Integer.class);
                 Long start=dataSnapshot.child("start").getValue(Long.class);
                 Long end=dataSnapshot.child("end").getValue(Long.class);
 
-                ConstraintLayout groupLayout =  new ConstraintLayout(getApplicationContext());
+                final ConstraintLayout groupLayout =  new ConstraintLayout(getApplicationContext());
                 groupLayout.setId(View.generateViewId());
                 groupLayout.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
                 groups.addView(groupLayout);
@@ -172,28 +183,36 @@ public class CourseActivity extends AppCompatActivity { // Даниел
                 groupLayout.addView(groupNameTV);
                 groupNameTV.setText(groupName);
 
-                groupNameTV.setTextSize(TypedValue.COMPLEX_UNIT_PX, height/40);
-                groupNameTV.setTextColor(getResources().getColor(R.color.light_blue3));
-                groupNameTV.setMaxLines(2);
+                groupNameTV.setTextSize(TypedValue.COMPLEX_UNIT_PX, height/37);
+                groupNameTV.setTextColor(Color.parseColor("#2676FF"));
+               // groupNameTV.setMaxLines(3);
 
-                TextView members=new TextView(getApplicationContext());
+                final TextView members=new TextView(getApplicationContext());
                 members.setId(View.generateViewId());
                 groupLayout.addView(members);
 
 
                 members.setTextSize(TypedValue.COMPLEX_UNIT_PX, height/36);
-                members.setTextColor(getResources().getColor(R.color.light_blue3));
-                members.setMaxLines(2);
+                members.setTextColor(Color.parseColor("#2676FF"));
 
 
 
 
 
-                if(currentNumber<10) {
-                    members.setText("       "+currentNumber + "/" + max);
+
+                if(currentNumber<10&&max>9) {
+                    members.setText("        "+currentNumber + "/" + max);
                 }
-                else{
+                else if(currentNumber<10&&max<10){
+                    members.setText("        "+currentNumber + "/" + max+"  ");
+                }
+                else {
                     members.setText("      "+currentNumber + "/" + max);
+                }
+
+
+                if(currentNumber==max){
+                    members.setTextColor(Color.parseColor("#D42121"));
                 }
                 Date startDateTime = new Date(start);
                 Date endDateTime=new Date(end);
@@ -214,27 +233,49 @@ public class CourseActivity extends AppCompatActivity { // Даниел
                 startDate.setId(View.generateViewId());
                 groupLayout.addView(startDate);
                 startDate.setText("Start date:  "+startDayOfYear+"/"+startMouth+"/"+startYear);
+                startDate.setTextSize(TypedValue.COMPLEX_UNIT_PX, height/38);
+                startDate.setTextColor(getResources().getColor(R.color.light_blue3));
 
                 TextView endDate=new TextView(getApplicationContext());
                 endDate.setId(View.generateViewId());
                 groupLayout.addView(endDate);
                 endDate.setText("End date:    "+endDayOfYear+"/"+endMouth+"/"+endYear);
+                endDate.setTextSize(TypedValue.COMPLEX_UNIT_PX, height/38);
+                endDate.setTextColor(getResources().getColor(R.color.light_blue3));
 
 
-                    Button joinBtn = new Button(getApplicationContext());
+
+                final Button joinBtn = new Button(getApplicationContext());
                     joinBtn.setId(View.generateViewId());
                     joinBtn.setText("JOIN");
-                    joinBtn.setBackgroundColor(Color.parseColor("#00ff00"));
                     joinBtn.setTextColor(Color.parseColor("#ffffff"));
-                    joinBtn.setTextSize(TypedValue.COMPLEX_UNIT_PX, height/30);
+                    joinBtn.setTextSize(TypedValue.COMPLEX_UNIT_PX, height/28);
 
 
-                    Button fullBtn =new Button(getApplicationContext());
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    groupLayout.setElevation(height/80);
+                }
+                joinBtn.setBackgroundResource(R.drawable.btnjoin);
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                    joinBtn.setOutlineSpotShadowColor(Color.parseColor("#A359A8"));
+                }
+                joinBtn.setShadowLayer(height/100,8,8,Color.parseColor("#738AFF"));
+
+
+
+                final Button fullBtn =new Button(getApplicationContext());
                     fullBtn.setId(View.generateViewId());
                     fullBtn.setText("FULL");
-                    fullBtn.setBackgroundColor(Color.parseColor("#ff0000"));
                     fullBtn.setTextColor(Color.parseColor("#ffffff"));
-                    fullBtn.setTextSize(TypedValue.COMPLEX_UNIT_PX, height/30);
+                    fullBtn.setTextSize(TypedValue.COMPLEX_UNIT_PX, height/28);
+
+                    fullBtn.setBackgroundResource(R.drawable.btnfull);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                    joinBtn.setOutlineSpotShadowColor(Color.parseColor("#A359A8"));
+                }
+                joinBtn.setShadowLayer(height/100,8,8,Color.parseColor("#738AFF"));
 
                 if(currentNumber<max){
                     groupLayout.addView(joinBtn);
@@ -243,27 +284,45 @@ public class CourseActivity extends AppCompatActivity { // Даниел
                     groupLayout.addView(fullBtn);
                 }
 
-                startDate.setTextSize(TypedValue.COMPLEX_UNIT_PX, height/40);
-                startDate.setTextColor(getResources().getColor(R.color.light_blue3));
-                startDate.setMaxLines(2);
+               joinBtn.setOnClickListener(new View.OnClickListener() {
+                   @Override
+                   public void onClick(View v) {
+                       dbRefParticipation.child(courseId).child(user.getUid()).setValue(groupName, new DatabaseReference.CompletionListener() {
+                           @Override
+                           public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
+                               if(databaseError == null){ // няма грешки -> успешен запис
+                                   // Да върнем в ClientActivity отговор, че сме записали дисциплина
+                                   Intent returnIntent = new Intent();
+                                   returnIntent.putExtra("courseId",courseId);
+                                   returnIntent.putExtra("groupId",groupName);
+                                   setResult(Activity.RESULT_OK, returnIntent);
+                                   finish();
+                               }
+                               else{
+                                   Toast.makeText(getApplicationContext(), "It seems that this group is already full.", Toast.LENGTH_SHORT).show();
+                                   // Да направим обновление:
+                                   groupLayout.removeView(joinBtn);
+                                   groupLayout.addView(fullBtn);
+                                   if(max<10){
+                                       members.setText("        "+max + "/" + max+"  ");
+                                   }
+                                   else{
+                                       members.setText("      "+max + "/" + max);
+                                   }
+                                   members.setTextColor(Color.parseColor("#D42121"));
+                               }
+                           }
+                       });
+                   }
+               });
 
-                endDate.setTextSize(TypedValue.COMPLEX_UNIT_PX, height/40);
-                endDate.setTextColor(getResources().getColor(R.color.light_blue3));
-                endDate.setMaxLines(2);
-
-
-                joinBtn.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-
-                    }
-                });
-
+                setMargins(groupLayout, width/26, height/70,width/26, height/70);
 
                 ConstraintSet cs = new ConstraintSet();
                 cs.clone(groupLayout);
                 cs.connect(groupNameTV.getId(), ConstraintSet.TOP, ConstraintSet.PARENT_ID, ConstraintSet.TOP);
                 cs.connect(groupNameTV.getId(), ConstraintSet.START, ConstraintSet.PARENT_ID, ConstraintSet.START);
+
 
                 cs.connect(startDate.getId(), ConstraintSet.TOP, groupNameTV.getId(), ConstraintSet.BOTTOM);
                 cs.connect(startDate.getId(), ConstraintSet.START, groupNameTV.getId(), ConstraintSet.START);
@@ -272,7 +331,7 @@ public class CourseActivity extends AppCompatActivity { // Даниел
                 cs.connect(endDate.getId(), ConstraintSet.START, startDate.getId(), ConstraintSet.START);
 
                 cs.connect(members.getId(), ConstraintSet.TOP, groupNameTV.getId(), ConstraintSet.TOP);
-                cs.connect(members.getId(), ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END, width/9);
+                cs.connect(members.getId(), ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END, width/14);
 
                 if(currentNumber<max){
                     cs.connect(joinBtn.getId(), ConstraintSet.TOP, members.getId(), ConstraintSet.BOTTOM);

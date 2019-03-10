@@ -51,11 +51,12 @@
         app:layout_constraintTop_toBottomOf="@+id/course_CL_Head"
         app:layout_constraintVertical_bias="0.0">
 
-        <TextView
+        <com.borjabravo.readmoretextview.ReadMoreTextView
             android:id="@+id/course_TV_desc"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Course name" />
+            android:text="Description"
+            />
 
         <TextView
             android:id="@+id/course_TV_lectureName"
@@ -72,6 +73,14 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Lecturer email" />
+
+        <View
+            android:id="@+id/view"
+            android:layout_width="wrap_content"
+            android:layout_height="1dp"
+            android:layout_gravity="center"
+            android:layout_marginBottom="5dp"
+            android:background="@color/light_blue2"/>
 
     </LinearLayout>
 

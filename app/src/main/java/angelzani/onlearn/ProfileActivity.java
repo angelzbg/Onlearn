@@ -165,8 +165,10 @@ public class ProfileActivity extends AppCompatActivity { // Ани & Ангел
             @Override
             public void onClick(View v) {
                 mAuth.signOut();
+                //finishAffinity();
+                //System.exit(0);
                 finishAffinity();
-                System.exit(0);
+                startActivity(new Intent(ProfileActivity.this, LoginActivity.class));
             }
         });
 
