@@ -24,6 +24,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.google.firebase.auth.FirebaseAuth;
@@ -52,11 +53,12 @@ public class CourseActivity extends AppCompatActivity { // Даниел
     private DatabaseReference mRef, dbRefUsers, dbRefCourse, dbRefGroups, dbRefParticipation;
 
     private TextView courseName;
-    private TextView desc;
     private TextView lectureName;
     private TextView lectureEmail;
     private LinearLayout groups;
     private ImageView backBtn;
+    private ScrollView desc;
+    private LinearLayout descLL;
 
     private int width, height;
 
@@ -75,11 +77,12 @@ public class CourseActivity extends AppCompatActivity { // Даниел
         dbRefParticipation=mRef.child("participation");
 
         courseName=findViewById(R.id.course_TV_courseName);
-        desc=findViewById(R.id.course_TV_desc);
+        desc=findViewById(R.id.course_SV_desc);
         lectureName=findViewById(R.id.course_TV_lectureName);
         lectureEmail=findViewById(R.id.course_TV_lectureEmail);
         groups=findViewById(R.id.course_LL_groups);
         backBtn=findViewById(R.id.course_IV_back);
+        descLL=findViewById(R.id.course_SLL_desc);
 
         Display display = getWindowManager().getDefaultDisplay();
         Point size = new Point();
@@ -101,10 +104,8 @@ public class CourseActivity extends AppCompatActivity { // Даниел
         courseName.setTextColor(getResources().getColor(R.color.white));
         //courseName.setMaxLines(5);
 
-        desc.setTextSize(TypedValue.COMPLEX_UNIT_PX, height/36);
-        desc.setTextColor(getResources().getColor(R.color.light_blue3));
-        desc.setPadding(height/40,height/100,height/70,0);
-        desc.setBackground(gradientDrawableBackgroundCourses);
+
+
 
         lectureName.setTextSize(TypedValue.COMPLEX_UNIT_PX, height/36);
         lectureName.setTextColor(getResources().getColor(R.color.light_blue3));
@@ -130,7 +131,20 @@ public class CourseActivity extends AppCompatActivity { // Даниел
 
 
         courseName.setText(courseId);
-        desc.setText(Html.fromHtml(d+description));
+        final TextView descView = new TextView(getApplicationContext());
+            descView.setText(Html.fromHtml(d+description));
+            descLL.addView(descView);
+
+        descView.setTextSize(TypedValue.COMPLEX_UNIT_PX, height/36);
+        descView.setTextColor(getResources().getColor(R.color.light_blue3));
+
+        desc.getLayoutParams().height=height/4;
+
+
+        descLL.setPadding(height/40,height/100,height/70,0);
+        descLL.setBackground(gradientDrawableBackgroundCourses);
+        descLL.setMinimumHeight(height/4);
+
 
 
         dbRefUsers.child(lecturerId).child("name").addListenerForSingleValueEvent(new ValueEventListener() {
