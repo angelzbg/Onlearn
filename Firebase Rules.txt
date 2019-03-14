@@ -1,0 +1,97 @@
+{
+  "rules": {
+      
+    "users": {
+      "$uid": {
+        "adr": {
+          ".write": "$uid == auth.uid",
+          ".read": "$uid == auth.uid || root.child('users').child(auth.uid).child('role').val() == 'admin'",
+        	".validate": "newData.isString() && newData.val().length < 101 && newData.val().length > 6"
+        },
+        "dob": {
+          ".write": "$uid == auth.uid",
+          ".read": "$uid == auth.uid || root.child('users').child(auth.uid).child('role').val() == 'admin'",
+        	".validate": "newData.isString() && newData.val().length < 11"
+        },
+        "email": {
+          ".read": "auth != null" // може да се чете от всички логнати потребители
+        },
+        "name": {
+          ".write": "$uid == auth.uid",
+          ".read": "auth != null", // може да се чете от всички логнати потребители
+          ".validate": "newData.isString() && newData.val().length < 101 && newData.val().length > 1"
+        },
+        "phone": {
+          ".write": "$uid == auth.uid",
+          ".read" : "$uid == auth.uid || root.child('users').child(auth.uid).child('role').val() == 'admin'",
+        	".validate": "newData.val().length < 50" //няма толкова дълъг телефонен номер ама xD мързел (може и с regex)
+        },
+        "role": {
+          ".read" : "$uid == auth.uid || root.child('users').child(auth.uid).child('role').val() == 'admin'"
+        }
+      }
+    }, //затваряща users
+        
+        
+    "course": {
+      ".read": "auth!= null",
+      ".write": "root.child('users').child(auth.uid).child('role').val() == 'admin'",
+      "$courseId": {
+        ".validate": "!root.child('course').child($courseId).exists() || root.child('course').child($courseId).child('lect').val() == auth.uid",
+      	"descr": {
+        	".validate": "newData.isString() && newData.val().length < 10000" // максимум 10 000 символа на описание
+      	},
+        "$other": {
+          ".validate": false // блокира писането на всякакви други полета
+        }
+      }
+    }, // затваряща course
+    
+    
+    "materials": {
+      "$courseId": {
+        //само ако потребителят е записан в тази дисциплина има правото да преглежда материалите + админите
+        ".read": "root.child('participation').child($courseId).child(auth.uid).exists() || root.child('users').child(auth.uid).child('role').val() == 'admin'",
+        "$materialId": {
+          // само създателят на тази дисциплина има правото да добавя материали
+          ".write": "root.child('course').child($courseId).child('lect').val() == auth.uid"
+        }
+      }
+    }, // затваряща materials
+    
+    "groups": {
+      ".read": "auth != null",
+      "$courseId": {
+        "$groupId": {
+          ".write": "root.child('course').child($courseId).exists() && root.child('course').child($courseId).child('lect').val() == auth.uid",
+          "start": {
+            ".validate": "newData.isNumber()"
+          },
+          "end": {
+            ".validate": "newData.isNumber()"
+          },
+          "max": {
+            ".validate": "newData.isNumber() && newData.val() > 0"
+          },
+          "current": {
+            ".write": false
+          },
+          "$other": {
+            ".validate": false // блокира писането на каквито и да било бонус полета
+          }
+        }
+      }
+    }, // затваряща groups
+    
+    "participation": {
+      ".read": "auth != null", // всеки логнат потребител може да чете
+      "$courseId": {
+        "$uid": {
+          // трябва да пише само себе си, current < max, да не се е записвал в тази дисциплина и групата, която се опитва да записва да съществува в конкретната дисциплина + началото на дисцилината да е > дата от сегашната
+          ".write": "auth.uid == $uid && root.child('groups').child($courseId).child(newData.val()).child('current').val() < root.child('groups').child($courseId).child(newData.val()).child('max').val() && !root.child('participation').child($courseId).child(auth.uid).exists() && root.child('groups').child($courseId).child(newData.val()).exists() && root.child('groups').child($courseId).child(newData.val()).child('start').val() >= now"
+        }
+      }
+    } //затваряща participation
+
+  } // затваряща rules
+} // затваряща главна

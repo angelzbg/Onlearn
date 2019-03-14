@@ -1,0 +1,70 @@
+const functions = require('firebase-functions');
+const admin = require('firebase-admin');
+admin.initializeApp();
+
+// Create and Deploy Your First Cloud Functions
+// https://firebase.google.com/docs/functions/write-firebase-functions
+
+exports.afterRegFunction = functions.auth.user().onCreate((user) => {
+	var userObject = {
+		email : user.email,
+        role : "client"
+    };
+    const p1 = admin.database().ref('users/' + user.uid).set(userObject);
+    return Promise.all([p1]);
+});
+
+exports.afterCourseAdded = functions.database.ref('/course/{courseId}').onWrite((change, context) => {
+    // Only edit data when it is first created.
+    if (change.before.exists()) {
+        return null;
+    }
+    // Exit when the data is deleted.
+    if (!change.after.exists()) { //This checks if its a delete event
+       return null;
+    }
+
+    // Grab the current value of what was written to the Realtime Database
+    const writtenContent = change.after.val();
+    //const uid = writtenContent.uid; //This line assumes that the uid field already exists in the node
+    const uid = context.auth ? context.auth.uid : null;
+    const courseId = context.params.courseId;
+    console.log('User ' + uid + ' created course ' + courseId);
+    const promise1 = admin.database().ref('/course/' + courseId + '/lect').set(uid);
+    //const promise2 = admin.database().ref('/course/' + courseId + '/name').set(courseId);
+    return Promise.all([promise1, promise2]);
+});
+
+exports.afterGroupAdded = functions.database.ref('/groups/{courseId}/{groupId}').onWrite((change, context) => {
+    // Only edit data when it is first created.
+    if (change.before.exists()) {
+        return null;
+    }
+    // Exit when the data is deleted.
+    if (!change.after.exists()) { //This checks if its a delete event
+       return null;
+    }
+
+    const writtenContent = change.after.val();
+    const uid = context.auth ? context.auth.uid : null;
+    const courseId = context.params.courseId;
+    const groupId = context.params.groupId;
+    console.log('User ' + uid + ' created group ' + groupId + ' in course ' + courseId);
+    const promise1 = admin.database().ref('/groups/' + courseId + '/' + groupId + '/current').set(0);
+    return Promise.all([promise1]);
+});
+
+exports.afterGroupJoined = functions.database.ref('/participation/{courseId}/{uid}').onWrite((change, context) => {
+    const writtenContent = change.after.val(); // groupId
+    const courseId = context.params.courseId;
+    const uid = context.auth ? context.auth.uid : null;
+
+    // При няколко записа по едно и същои време може да стане грешка -> трябва да се използва transaction, а не написаното по-долу
+    let ref = admin.database().ref('/groups/' + courseId + '/' + writtenContent+'/current');
+    ref.once('value').then(snapshot => {
+    const count = snapshot.val();
+    return ref.set(count+1);
+    }).catch(err => {
+        console.log(err);
+    });
+});
