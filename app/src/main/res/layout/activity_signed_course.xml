@@ -34,27 +34,28 @@
 
     <TextView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="100pt"
         android:layout_marginTop="30dp"
         android:scrollbars="vertical"
         android:text="@string/discipline_info1"
         android:textAlignment="center"
-        android:textColor="@color/betweenBackgroundAndWhite" />
+        android:textColor="@color/betweenBackgroundAndWhite"
+        android:background="@color/light_blue2"/>
 
 
+    <Spinner
 
-
-
-
-<Spinner
-    android:layout_marginTop="30dp"
-    android:id="@+id/sp"
-    android:text="Изберете материали"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"></Spinner>
-
-
-
+        android:id="@+id/sp"
+        android:layout_width="match_parent"
+        android:layout_height="39dp"
+        android:layout_marginTop="30dp"
+        android:clickable="true"
+        android:background="@color/colorAccent"
+        android:dropDownWidth="match_parent"
+        android:entries="1-3week,3-6week,6-10week"
+        android:text="@string/materials"
+        android:textColor="@color/white"
+        android:focusable="true" />
 
 
 

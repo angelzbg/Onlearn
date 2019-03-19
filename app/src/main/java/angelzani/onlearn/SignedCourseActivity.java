@@ -27,7 +27,7 @@ import com.google.firebase.database.ValueEventListener;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class SignedCourseActivity extends AppCompatActivity { // Калофер
+public class SignedCourseActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener { // Калофер
 
     //Firebase
     private FirebaseAuth mAuth;
@@ -40,34 +40,31 @@ public class SignedCourseActivity extends AppCompatActivity { // Калофер
 
     }
 
-    Spinner sp;
-    String[] materials={"1-3седм","3-6седм","6-10седм"};
 @Override
 protected void onCreate(Bundle savedInstanceState){
 super.onCreate(savedInstanceState);
 setContentView(R.layout.activity_signed_course);
-sp=(Spinner) findViewById(R.id.sp);
 
-//Adapter
-ArrayAdapter<String> adapter = new ArrayAdapter<~>(this, android.R.layout.simple_list_item_1,materials);
-sp.setAdapter(adapter);
+Spinner spinner = findViewById(R.id.sp);
+ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.materials, android.R.layout.simple_spinner_item);
+adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+spinner.setAdapter(adapter);
+spinner.setOnItemSelectedListener(this);
 
-//LISTENER
-sp.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener(){
-@Override
-public void onItemSelected(new AdapterView<?> adapterView, View view,int i,long l){
-Toast.makeText(SignedCourseActivity.this,materials[i],Toast.LENGTH_SHORT).show();
+
+
 }
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-
+        String text=parent.getItemAtPosition(position).toString();
+        Toast.makeText(parent.getContext(), text, Toast.LENGTH_SHORT).show();
     }
 
     @Override
-public void onNothingSelected(AdapterView<?> adapterView) {
+    public void onNothingSelected(AdapterView<?> parent) {
 
-};
+    }
 
 
 
@@ -106,15 +103,18 @@ public void onNothingSelected(AdapterView<?> adapterView) {
 
         // Взимане на подадените стойности от ClientActivity
         Intent intent = getIntent();
-        final String courseIdExtra = intent.getStringExtra("courseId");
-        final String descriptionExtra = intent.getStringExtra("description");
-        final String lecturerIdExtra = intent.getStringExtra("lecturerId");
-        final String groupIdExtra = intent.getStringExtra("groupId");
+    final String courseIdExtra = intent.getStringExtra("courseId");
+    final String descriptionExtra = intent.getStringExtra("description");
+    final String lecturerIdExtra = intent.getStringExtra("lecturerId");
+    final String groupIdExtra = intent.getStringExtra("groupId");
 
 
-        Toast.makeText(getApplicationContext(), "Course name: " + courseIdExtra, Toast.LENGTH_LONG).show();
+Toast.makeText(getApplicationContext(), "Course name: " + courseIdExtra, Toast.LENGTH_LONG).show();
+
 
         // Изтегляне на позволената информация за потребителят, който е създал дисциплината
+
+
         dbRefUsers.child(lecturerIdExtra).child("name").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
